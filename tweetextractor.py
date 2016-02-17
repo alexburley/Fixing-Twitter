@@ -22,9 +22,6 @@ def printOut(base,max):
 	lineCount = 1
 
 	for line in infile:
-		print lineCount >= base
-		print lineCount <= max
-		print base
 		if(lineCount >= base):
 			print >>outfile, line
 			if (lineCount == max):
