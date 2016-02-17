@@ -9,20 +9,26 @@ import sys
 import re
 
 infile = open(sys.argv[1],'r')
-outfile = open(sys.argv[2],'w')
-start = sys.argv[3]
-end = sys.argv[4]
+#Alternate method will automatically generate name
+#outfile = open(sys.argv[2],'w')
+start = sys.argv[2]
+end = sys.argv[3]
 
 
+#PRINTING OUT ALL UP TO BASE
 def printOut(base,max):
-    
-    lineCount = 0
 
-    for line in infile:
-    	if(lineCount >= start & lineCount <= end):
-        	print >>outfile, line
-        	if (lineCount == max):
-            	break
-        lineCount += 1
+	outfile = open(sys.argv[1]+"extracted"+str(base)+"--"+str(max)+".txt", 'w')
+	lineCount = 1
 
-printOut(start,end)
+	for line in infile:
+		print lineCount >= base
+		print lineCount <= max
+		print base
+		if(lineCount >= base):
+			print >>outfile, line
+			if (lineCount == max):
+				break
+		lineCount += 1
+
+printOut(int(start),int(end))
