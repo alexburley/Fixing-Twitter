@@ -2,7 +2,7 @@ import re
 import unittest
 import spellchecker as sc
 #NEED PYTHON 32BIT
-#import enchant
+import enchant
 
 class RegexFinder:
 

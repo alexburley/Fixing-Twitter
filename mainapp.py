@@ -7,6 +7,7 @@ import unittest
 import spellchecker as sc
 import enchant
 import Tkinter
+from tkFileDialog import askopenfilename
 
 class mainApp(Tkinter.Tk):
 
@@ -17,18 +18,46 @@ class mainApp(Tkinter.Tk):
 	def __init__(self,parent):
 		Tkinter.Tk.__init__(self,parent)
 		self.parent = parent
+		self.filePath = ""
 		self.initialize()
 
 	def initialize(self):
 		self.grid()
 		button = Tkinter.Button(self,text=u"Run Code", command = self.onButtonClick)
 		button.grid(column=0,row=0)
+
+		fileOpen = Tkinter.Button(self,text="File",command=self.onFileClick)
+		fileOpen.grid(column=1,row=0)
+
+		uploadedFile = Tkinter.Label(self,text="No File Uploaded")
+		uploadedFile.grid(column=2,row=0)
+		
+		jwbox = Tkinter.Checkbutton(self, text="JW Tag")
+		jwbox.grid(column=0,row=1)
+
+		excessbox = Tkinter.Checkbutton(self, text="Excess Tag")
+		excessbox.grid(column=1,row=1)
+
+		hbox = Tkinter.Checkbutton(self, text="Hash Tag")
+		hbox.grid(column=2,row=1)
+
+		timebox = Tkinter.Checkbutton(self, text="Time Tag")
+		timebox.grid(column=3,row=1)
+
 		self.grid_columnconfigure(0,weight=1)
+
 		#resizingallowed(x,y)
 		#self.resizable(True,False)
 
 	def onButtonClick(self):
 		self.mainCode()
+
+	def onFileClick(self):
+		uploadedFilePath = askopenfilename()
+		uploadedFile = Tkinter.Label(self,text=uploadedFilePath)
+		uploadedFile.grid(column=2,row=0)
+
+
 
 	def mainCode(self):
 
@@ -59,9 +88,6 @@ class mainApp(Tkinter.Tk):
 	Radio buttons for what regex tags to look for.
 
 """
-
-
-
 
 #outfile = open(sys.argv[2],'w')
 #MAIN INITALIZER CODE
