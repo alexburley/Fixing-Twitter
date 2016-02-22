@@ -14,23 +14,37 @@ class RegexFinder:
 		self.num_excesstags = 0
 		self.num_timetags = 0
 
-		self.cur_htags = 0
-		self.cur_atags = 0
-		self.cur_urltags = 0
-		self.cur_jwtags = 0
-		self.cur_excesstags = 0
-		self.cur_timetags = 0
+		self.currentline = ""
 
 	
+	def hasTags(self, options):
 
-	def numTags(self, testTag):
+		flag = 1
 
-		if (testTag == "excess_tag"):
-			return (self.cur_excesstags > 0)
-		if (testTag == "jwtag"):
-			return (self.cur_jwtags > 0)
+		#print options
+
+		if(options['all']):
+			return 1
+		elif (options['hasExcess']):
+			if (self.cur_excesstags > 0):
+				return 1
+		elif (options['hasJW']):
+			if (self.cur_jwtags > 0):
+				return 1
+		elif (options['hasH']):
+			if (self.cur_htags > 0):
+				return 1
+		elif (options['hasTime']):
+			if (self.cur_timetags > 0):
+				return 1
+		elif (options['hasURL']):
+			if (self.cur_urltags > 0):
+				return 1
+		else:
+			return 0
 
 	def tokenizeLine(self,line,htags,atags,jwtags,urltags,timetags):
+
 
 		line = line.rstrip('\r\n').lower()
 
@@ -61,20 +75,31 @@ class RegexFinder:
 
 	def subHashtags(self,line):
 		h_tag = re.compile('#+\w+\S*')
-		self.num_htags += len(re.findall(h_tag,line))
+		self.cur_htags = len(re.findall(h_tag,line))
+		self.num_htags += self.cur_htags
 		line = h_tag.sub('0h_tag0', line)
 		return line
 
 	def subAccountTags(self,line):
 		a_tag = re.compile('@+\w+\S*')
-		self.num_atags += len(re.findall(a_tag,line))
+		self.cur_atags = len(re.findall(a_tag,line))
+		self.num_atags += self.cur_atags
 		line = a_tag.sub('0a_tag0',line)
 		return line
 	
 	def subURLTags(self,line):
+
+		"""MERGE INTO ONE RE"""
 		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
-		self.num_urltags += len(re.findall(url_tag,line))
+		num_urltags1 = len(re.findall(url_tag,line))
 		line = url_tag.sub('0url_tag0', line)
+		#remove all website that are just xyz.com
+		url_tag = re.compile('\w+.com')
+		num_urltags2 = len(re.findall(url_tag,line))
+		line = url_tag.sub('0url_tag0', line)
+
+		self.cur_urltags = num_urltags1 + num_urltags2
+		self.num_urltags += self.cur_urltags
 		return line
 
 	def subTimeTags(self,line):
@@ -120,11 +145,27 @@ class RegexFinder:
 		self.num_excesstags += self.cur_excesstags
 		return tokens
 
+	def outputLines(self,infile,options):
 
-	#How important is punctuation in machine translation, do two tests for extra results
-	def stripPunctuation(self,line):
-		return self
+		print "-------------------------------------------------------------"
+		for line in infile:
+			self.currentline = line
+			if line.strip():
+				tokens = self.subLine(line)
+				if (self.hasTags(options)):
+					print line
+					new_line=""
+					for token in tokens:
+						if new_line == "":
+							new_line = new_line+token
+						else:
+							new_line = new_line+" "+token
+					print new_line
+					print "-------------------------------------------------------------"
 
+
+
+	
 
 
 
