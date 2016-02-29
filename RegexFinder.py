@@ -15,7 +15,6 @@ class RegexFinder:
 		self.num_timetags = 0
 
 		self.currentline = ""
-
 	
 	def hasTags(self, options):
 
@@ -43,8 +42,7 @@ class RegexFinder:
 		else:
 			return 0
 
-	def tokenizeLine(self,line,htags,atags,jwtags,urltags,timetags):
-
+	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags):
 
 		line = line.rstrip('\r\n').lower()
 
@@ -58,26 +56,34 @@ class RegexFinder:
 			line = self.subTimeTags(line)
 		if jwtags:
 			line = self.subJoinedWordTags(line)
+		#if excesstags:
+			#line = self.subExcessLetterTags(line)
 
-		#WILL NEED TO STRIP PUNCTUATION HERE TO TOKENISE.
+		line = self.subUniCode(line)
 		from string import punctuation
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
-		tokens = self.insertExcessLetterTags(tokens)
+		if (excesstags):
+			tokens = self.insertExcessLetterTags(tokens)
 		return tokens
 
 	def subLine(self,line):	
-
-		tokens = self.tokenizeLine(line,1,1,1,1,1)
+		tokens = self.tokenizeLine(line,1,1,1,1,1,1)
 		return tokens
 
+	"""
+	Approach 1: Sub in the index of the token (in the original substitution then track back)
+	Approach 2: 
+	"""
+
 	def subHashtags(self,line):
-		h_tag = re.compile('#+\w+\S*')
+		h_tag = re.compile('#+\w+')
 		self.cur_htags = len(re.findall(h_tag,line))
 		self.num_htags += self.cur_htags
 		line = h_tag.sub('0h_tag0', line)
+		it = re.finditer(h_tag,line)
 		return line
 
 	def subAccountTags(self,line):
@@ -86,7 +92,7 @@ class RegexFinder:
 		self.num_atags += self.cur_atags
 		line = a_tag.sub('0a_tag0',line)
 		return line
-	
+
 	def subURLTags(self,line):
 
 		"""MERGE INTO ONE RE"""
@@ -109,7 +115,9 @@ class RegexFinder:
 		line = time_tag.sub('0time_tag0',line)
 		return line
 
-
+	"""
+		what about elipses
+	"""
 	def subJoinedWordTags(self,line):
 		jw_tag = re.compile('((\w+)\.(\w+))')
 		self.cur_jwtags = len(re.findall(jw_tag,line))
@@ -120,11 +128,20 @@ class RegexFinder:
 		line = jw_tag.sub('0jw_tag0',line)
 		return line
 
+
+	"""
+		What about numbers, what about roman numerals. 
+	"""
 	def subExcessLetterTags(self,line):
-		excess_tag = re.compile('\w[a-zA-Z]2+\w?')
+		excess_tag = re.compile('[a-zA-Z]{3,}')
 		self.cur_excesstags = len(re.findall(excess_tag,line))
 		self.num_excesstags += self.cur_excesstags
 		line = excess_tag.sub('0el_tag0',line)
+		return line
+
+	def subUniCode(self,line):
+		unicode_tag = re.compile('\\u[0-9]*')
+		line = unicode_tag.sub('0uni_tag0',line)
 		return line
 
 	def insertExcessLetterTags(self,tokens):
@@ -144,6 +161,8 @@ class RegexFinder:
 		self.cur_excesstags = tagCount
 		self.num_excesstags += self.cur_excesstags
 		return tokens
+
+
 
 	def outputLines(self,infile,options):
 

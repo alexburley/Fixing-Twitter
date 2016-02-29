@@ -57,13 +57,14 @@ class mainApp(Tkinter.Tk):
 		y = 1
 
 		#If we want to search tweets containing only a specific tags
-		searchTags = Tkinter.Label(self,text="Output tags with:")
+		searchTags = Tkinter.Label(self,text="Output tweets with:")
 		searchTags.grid(column=0,row=y)		
 
 		y = 2
 
 		#All tags
 		self.all = Tkinter.IntVar()
+		self.all.set(1)
 		self.allbox = Tkinter.Checkbutton(self, text="All",variable = self.all)
 		self.allbox.grid(column=0,row=y)
 		
@@ -92,14 +93,31 @@ class mainApp(Tkinter.Tk):
 		self.urlbox = Tkinter.Checkbutton(self, text="URL tag",variable = self.urltag)
 		self.urlbox.grid(column=5,row=y)
 
-		y = 3
+		#y = 3
 
 		#Below we will list all the normalisation methods that we will use
-		useNormalisationMethods = Tkinter.Label(self,text="Use Normalisation Methods")
-		searchTags.grid(column=0,row=y)
+		#useNormalisationMethods = Tkinter.Label(self,text="Use Normalisation Methods")
+		#useNormalisationMethods.grid(column=0,row=y)
+
+		y = 4
+
+		self.num_htags = Tkinter.Label(self,text="HTags: 0")
+		self.num_htags.grid(column=0,row=y)
+
+		self.num_jwtags = Tkinter.Label(self,text="JWTags: 0")
+		self.num_jwtags.grid(column=1,row=y)
+
+		self.num_excesstags = Tkinter.Label(self,text="ExcessTags: 0")
+		self.num_excesstags.grid(column=2,row=y)
+
+		self.num_URLtags = Tkinter.Label(self,text="URLTags: 0")
+		self.num_URLtags.grid(column=3,row=y)
+
 
 		#Configure grid and display
 		self.grid_columnconfigure(0,weight=1)
+
+
 
 		#Options to resize window
 		#resizingallowed(x,y)
@@ -127,12 +145,27 @@ class mainApp(Tkinter.Tk):
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
 
+		y = 4
+
+		self.num_htags = Tkinter.Label(self,text="HTags: "+str(regexFinder.num_htags))
+		self.num_htags.grid(column=0,row=y)
+
+		self.num_jwtags = Tkinter.Label(self,text="JWTags: "+str(regexFinder.num_jwtags))
+		self.num_jwtags.grid(column=1,row=y)
+
+		self.num_excesstags = Tkinter.Label(self,text="ExcessTags: "+str(regexFinder.num_excesstags))
+		self.num_excesstags.grid(column=2,row=y)
+
+		self.num_URLtags = Tkinter.Label(self,text="URLTags: "+str(regexFinder.num_urltags))
+		self.num_URLtags.grid(column=3,row=y)
+
+
 
 
 if __name__ == "__main__":
 
 	app = mainApp(None)
-	app.title('Fixing-Twitter')
+	app.title('Fixing-Twitter by Alex Burley')
 	app.mainloop()
 
 #print "\n"
