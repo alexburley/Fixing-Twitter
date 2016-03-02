@@ -3,6 +3,7 @@ import unittest
 import spellchecker as sc
 #NEED PYTHON 32BIT
 import enchant
+from string import punctuation
 
 class RegexFinder:
 
@@ -15,6 +16,7 @@ class RegexFinder:
 		self.num_timetags = 0
 
 		self.currentline = ""
+		self.dict = enchant.Dict("en_US")
 	
 	def hasTags(self, options):
 
@@ -60,7 +62,7 @@ class RegexFinder:
 			#line = self.subExcessLetterTags(line)
 
 		line = self.subUniCode(line)
-		from string import punctuation
+		
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
 
 		#line = self.subExcessLetterTags(line)
@@ -76,14 +78,49 @@ class RegexFinder:
 	"""
 	Approach 1: Sub in the index of the token (in the original substitution then track back)
 	Approach 2: 
+
+
 	"""
 
+	""" WHAT ABOUT punctuation hashtags like #l'pool
+
+		We want to check if the hashtag is part of the sentence of the tweet. If not we can remove it
+		if it is at the end of the tweet. Or we can insert a placeholder. Use a list with a tuple of a (t)
+
+		Approach: for each match we perform operations to determine whether the hashtag is part of the sentence:
+
+		e.g "I hope #LFC #win today" : "I hope 0h_tag0 win today".
+		e.g "I hope we win today #LFC #Winners" : "I hope we win today"
+
+
+	"""
 	def subHashtags(self,line):
-		h_tag = re.compile('#+\w+')
+		h_tag = re.compile('(#)+(\w+)')
 		self.cur_htags = len(re.findall(h_tag,line))
 		self.num_htags += self.cur_htags
-		line = h_tag.sub('0h_tag0', line)
-		it = re.finditer(h_tag,line)
+
+		def normalizeHashtags(m):
+			#RECURSE BACKWARDS
+			htag = m.group(2)
+			end = m.end()
+			if (end+2<len(line)):
+				if(line[end+2] != '#'):
+					if(self.dict.check(htag)):
+						print htag
+						return htag
+					else:
+						return '0h_tag0'
+				else:
+					return m.group()
+			else:
+				return ""
+
+		line = h_tag.sub(normalizeHashtags, line)
+
+		while (len(re.findall(h_tag,line)) > 0):
+
+			line = h_tag.sub(normalizeHashtags, line)
+
 		return line
 
 	def subAccountTags(self,line):
@@ -140,7 +177,7 @@ class RegexFinder:
 		return line
 
 	def subUniCode(self,line):
-		unicode_tag = re.compile('\\u[0-9]*')
+		unicode_tag = re.compile('\\u[0-9]+')
 		line = unicode_tag.sub('0uni_tag0',line)
 		return line
 

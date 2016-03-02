@@ -27,7 +27,7 @@ class mainApp(Tkinter.Tk):
 	def __init__(self,parent):
 		Tkinter.Tk.__init__(self,parent)
 		self.parent = parent
-		self.filePath = ""
+		self.filePath = "test_tweets.txt"
 		self.initialize()
 
 	#Initialise GUI with all the controls we will be using
