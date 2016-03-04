@@ -16,7 +16,7 @@ class RegexFinder:
 		self.num_timetags = 0
 
 		self.currentline = ""
-		self.dict = enchant.Dict("en_US")
+		self.d = enchant.Dict("en_US")
 	
 	def hasTags(self, options):
 
@@ -105,7 +105,7 @@ class RegexFinder:
 			end = m.end()
 			if (end+2<len(line)):
 				if(line[end+2] != '#'):
-					if(self.dict.check(htag)):
+					if(self.d.check(htag)):
 						print htag
 						return htag
 					else:
@@ -116,10 +116,6 @@ class RegexFinder:
 				return ""
 
 		line = h_tag.sub(normalizeHashtags, line)
-
-		while (len(re.findall(h_tag,line)) > 0):
-
-			line = h_tag.sub(normalizeHashtags, line)
 
 		return line
 
@@ -156,13 +152,43 @@ class RegexFinder:
 		what about elipses
 	"""
 	def subJoinedWordTags(self,line):
-		jw_tag = re.compile('((\w+)\.(\w+))')
+		jw_tag = re.compile('(\w+)\.(\w+)')
 		self.cur_jwtags = len(re.findall(jw_tag,line))
 		self.num_jwtags += self.cur_jwtags
-		joinedwords=jw_tag.search(line)
-		if joinedwords:
-				joinedWords = [joinedwords.group(1),joinedwords.group(2)]
-		line = jw_tag.sub('0jw_tag0',line)
+		joinedwords=re.findall(jw_tag,line)
+
+		"""
+			Potentially make a list of common words that we can suggest to, machine learning?
+			
+		"""
+
+		def normalizeJoinedWordTags(m):
+			w1 = m.group(1)
+			w2 = m.group(2)
+
+			w1Check = self.d.check(w1)
+			w2Check = self.d.check(w2)
+
+			if (len(self.d.suggest(w1))>0):
+				w1New = self.d.suggest(w1)[0]
+			else:
+				w1New = ""
+
+			if(len(self.d.suggest(w2))>0):
+				w2New = self.d.suggest(w2)[0]
+			else:
+				w2New = ""
+			#check for more than 1 fullstop
+			if (not w1Check or not w2Check):
+				print w1+": "+w1New
+				print w2+": "+w2New
+				if (self.d.check(w1+w2)):
+					return w1+w2
+				else:
+					return w1+" "+w2
+			else:
+				return w1+" "+w2
+		line = jw_tag.sub(normalizeJoinedWordTags,line)
 		return line
 
 
@@ -170,14 +196,14 @@ class RegexFinder:
 		What about numbers, what about roman numerals. 
 	"""
 	def subExcessLetterTags(self,line):
-		excess_tag = re.compile('[a-zA-Z]{3,}')
+		excess_tag = re.compile('\w[a-zA-Z]{3,}')
 		self.cur_excesstags = len(re.findall(excess_tag,line))
 		self.num_excesstags += self.cur_excesstags
 		line = excess_tag.sub('0el_tag0',line)
 		return line
 
 	def subUniCode(self,line):
-		unicode_tag = re.compile('\\u[0-9]+')
+		unicode_tag = re.compile('\\u[0-9]+[a-zA-Z]*')
 		line = unicode_tag.sub('0uni_tag0',line)
 		return line
 
