@@ -69,6 +69,18 @@ class RegexFinder:
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
+
+		def spellReplace(m):
+			if (not self.d.check(m)):
+				if (len(self.d.suggest(m))>0):
+					print self.d.suggest(m)
+					return self.d.suggest(m)[0]
+				else:
+					return m
+			else:
+				return m
+
+		tokens = map(spellReplace, tokens)
 		"""
 		if (excesstags):
 			tokens = self.insertExcessLetterTags(tokens)
@@ -127,7 +139,14 @@ class RegexFinder:
 		a_tag = re.compile('@+\w+\S*')
 		self.cur_atags = len(re.findall(a_tag,line))
 		self.num_atags += self.cur_atags
-		line = a_tag.sub('0a_tag0',line)
+
+		def normalizeAccountTag(m):
+			start = m.start()
+			if (start == 0):
+				return ""
+			else:
+				return '0a_tag0'
+		line = a_tag.sub(normalizeAccountTag,line)
 		return line
 
 	def subURLTags(self,line):
@@ -201,6 +220,7 @@ class RegexFinder:
 					return w1+" "+w2
 			else:
 				return w1+" "+w2
+
 		line = jw_tag.sub(normalizeJoinedWordTags,line)
 		return line
 
