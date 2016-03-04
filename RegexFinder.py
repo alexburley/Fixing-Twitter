@@ -58,6 +58,8 @@ class RegexFinder:
 			line = self.subTimeTags(line)
 		if jwtags:
 			line = self.subJoinedWordTags(line)
+		if excesstags:
+			line = self.subExcessLetterTags(line)
 		#if excesstags:
 			#line = self.subExcessLetterTags(line)
 
@@ -67,8 +69,10 @@ class RegexFinder:
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
+		"""
 		if (excesstags):
 			tokens = self.insertExcessLetterTags(tokens)
+		"""
 		return tokens
 
 	def subLine(self,line):	
@@ -131,11 +135,20 @@ class RegexFinder:
 		"""MERGE INTO ONE RE"""
 		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 		num_urltags1 = len(re.findall(url_tag,line))
-		line = url_tag.sub('0url_tag0', line)
+
+		def normalizeURLTag(m):
+			end = m.end()
+			if (end == len(line)):
+				return ""
+			else:
+				return '0url_tag0'
+
+		line = url_tag.sub(normalizeURLTag, line)
+
 		#remove all website that are just xyz.com
-		url_tag = re.compile('\w+.com')
+		url_tag = re.compile('\w+\.com')
 		num_urltags2 = len(re.findall(url_tag,line))
-		line = url_tag.sub('0url_tag0', line)
+		line = url_tag.sub(normalizeURLTag, line)
 
 		self.cur_urltags = num_urltags1 + num_urltags2
 		self.num_urltags += self.cur_urltags
@@ -159,7 +172,7 @@ class RegexFinder:
 
 		"""
 			Potentially make a list of common words that we can suggest to, machine learning?
-			
+
 		"""
 
 		def normalizeJoinedWordTags(m):
@@ -196,16 +209,25 @@ class RegexFinder:
 		What about numbers, what about roman numerals. 
 	"""
 	def subExcessLetterTags(self,line):
-		excess_tag = re.compile('\w[a-zA-Z]{3,}')
+		excess_tag = re.compile(r'(.)\1{2,}')
 		self.cur_excesstags = len(re.findall(excess_tag,line))
 		self.num_excesstags += self.cur_excesstags
-		line = excess_tag.sub('0el_tag0',line)
+
+		def normalizeExcessLetterTags(m):
+			return m.group(1)*2
+
+		line = excess_tag.sub(normalizeExcessLetterTags,line)
 		return line
 
 	def subUniCode(self,line):
 		unicode_tag = re.compile('\\u[0-9]+[a-zA-Z]*')
-		line = unicode_tag.sub('0uni_tag0',line)
+
+		def normalizeUniCode(m):
+			return ''
+		line = unicode_tag.sub(normalizeUniCode,line)
 		return line
+
+	"""		
 
 	def insertExcessLetterTags(self,tokens):
 		count = 1
@@ -224,6 +246,8 @@ class RegexFinder:
 		self.cur_excesstags = tagCount
 		self.num_excesstags += self.cur_excesstags
 		return tokens
+
+	"""
 
 
 
