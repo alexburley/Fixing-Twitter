@@ -291,7 +291,10 @@ class RegexFinder:
 					print "-------------------------------------------------------------"
 					print >> output, "Original: ", line.strip()
 					print >> output, "Normalised: ", new_line
-					print >> output, "Translated: "
+					print >> output, "Perfect Normalised: "
+					print >> output, "Translated Original: "
+					print >> output, "Translated Normalised: "
+					print >> output, "Perfect Translation: "
 					print >> output, "\n"
 		output.close()
 
