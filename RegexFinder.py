@@ -47,12 +47,12 @@ class RegexFinder:
 		else:
 			return 0
 
-	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags):
+	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags,spellcheck):
 
 		line = line.rstrip('\r\n').lower()
 
 		if (self.outfile[len(self.outfile)-1] != "."):
-			self.outfiel = self.outfile+"."
+			self.outfile = self.outfile+"."
 
 		if htags:
 			line = self.subHashtags(line)
@@ -93,7 +93,8 @@ class RegexFinder:
 			else:
 				return m
 
-		tokens = map(spellReplace, tokens)
+		if spellcheck:
+			tokens = map(spellReplace, tokens)
 		self.outfile = self.outfile+"s"
 		"""
 		if (excesstags):
@@ -106,7 +107,9 @@ class RegexFinder:
 		return tokens
 
 	def subLine(self,line):	
-		tokens = self.tokenizeLine(line,1,1,1,1,1,1)
+		tokens = self.tokenizeLine(line,self.options['normHTag'],self.options['normATag'],
+			self.options['normJWTag'],self.options['normURLTag'],self.options['normExcessTag'],
+				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
 
 	"""
@@ -268,6 +271,7 @@ class RegexFinder:
 
 	def outputLines(self,infile,options):
 
+		self.options = options
 		
 		print "-------------------------------------------------------------"
 		output = open(self.outfile,'w+')

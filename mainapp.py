@@ -125,6 +125,50 @@ class mainApp(Tkinter.Tk):
 		self.num_URLtags.grid(column=3,row=y)
 
 
+
+		y = 5
+
+		self.normalizationTitle = Tkinter.Label(self,text="Normalization Technique Selection")
+		self.normalizationTitle.grid(column=0,row=y)
+
+		y = 6
+
+		self.hashTagN = Tkinter.IntVar()
+		self.hashTagB = Tkinter.Checkbutton(self, text="Hashtags", variable = self.hashTagN)
+		self.hashTagN.set(1)
+		self.hashTagB.grid(column=0,row=y)
+
+		self.joinedWordsN = Tkinter.IntVar()
+		self.joinedWordsN.set(1)
+		self.joinedWordsB = Tkinter.Checkbutton(self, text="JoinedWords", variable =self.joinedWordsN)
+		self.joinedWordsB.grid(column=1,row=y)
+
+		self.accTagN = Tkinter.IntVar()
+		self.accTagN.set(1)
+		self.accTagB = Tkinter.Checkbutton(self,text="AccountTags",variable = self.accTagN)
+		self.accTagB.grid(column=2,row=y)
+
+		self.urlTagN = Tkinter.IntVar()
+		self.urlTagN.set(1)
+		self.urlTagB =Tkinter.Checkbutton(self,text="URLs",variable=self.urlTagN)
+		self.urlTagB.grid(column=3,row=y)
+
+		self.timeTagN = Tkinter.IntVar()
+		self.timeTagN.set(1)
+		self.timeTagB = Tkinter.Checkbutton(self,text="Timestamps", variable=self.timeTagN)
+		self.timeTagB.grid(column=4,row=y)
+
+		self.spellcheckN =Tkinter.IntVar()
+		self.spellcheckN.set(1)
+		self.spellcheckB = Tkinter.Checkbutton(self,text="Spellcheck",variable=self.spellcheckN)
+		self.spellcheckB.grid(column=5,row=y)
+
+		self.excessTagN = Tkinter.IntVar()
+		self.excessTagN.set(1)
+		self.excessTagB = Tkinter.Checkbutton(self, text= "ExcessLetters",variable=self.excessTagN)
+		self.excessTagB.grid(column=6,row=y)
+
+
 		#Configure grid and display
 		self.grid_columnconfigure(0,weight=1)
 
@@ -175,6 +219,13 @@ class mainApp(Tkinter.Tk):
 		options['hasTime'] = self.timetag.get()
 		options['hasURL'] = self.urltag.get()
 		options['all'] = self.all.get()
+		options['normHTag'] = self.hashTagN.get()
+		options['normATag'] = self.accTagN.get()
+		options['normURLTag'] = self.urlTagN.get()
+		options['normTimeTag'] = self.timeTagN.get()
+		options['normSpellcheck'] = self.spellcheckN.get()
+		options['normJWTag'] = self.joinedWordsN.get()
+		options['normExcessTag'] = self.excessTagN.get()
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
 		print regexFinder.total_chars
