@@ -51,6 +51,17 @@ class mainApp(Tkinter.Tk):
 		self.uploadedFile = Tkinter.Label(self,text="No File Uploaded")
 		self.uploadedFile.grid(column=2,row=y)
 
+		self.minValue = Tkinter.StringVar()
+		self.minEntry = Tkinter.Entry(self,textvariable=self.minValue)
+		self.minEntry.grid(column=3, row=y)
+
+		self.maxValue = Tkinter.StringVar()
+		self.maxEntry = Tkinter.Entry(self, textvariable=self.maxValue)
+		self.maxEntry.grid(column=4, row=y)
+
+		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets())
+		self.extractButton.grid(column=5,row=y)
+
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
 
@@ -131,6 +142,28 @@ class mainApp(Tkinter.Tk):
 		self.uploadedFile = Tkinter.Label(self,text=self.filePath)
 		self.uploadedFile.grid(column=2,row=0)
 
+	def extractTweets(self):
+		min = self.minValue.get()
+		max = self.maxValue.get()
+
+		def printOut(base,max):
+
+			outfile = open("tweets--"+str(base)+"--"+str(max)+".txt", 'w')
+			infile = open("tweetsforanalysis.en",'r')
+			lineCount = 1
+
+			for line in infile:
+				if(lineCount >= base):
+					print >>outfile, line
+					if (lineCount == max):
+						break
+				lineCount += 1
+
+			return os.getcwd()+outfile
+
+		#filepath = printOut(min,max)
+		#print filepath
+
 	def mainCode(self):
 
 		infile = open(self.filePath,'r')
@@ -144,6 +177,7 @@ class mainApp(Tkinter.Tk):
 		options['all'] = self.all.get()
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
+		print regexFinder.total_chars
 
 		y = 4
 
@@ -158,9 +192,6 @@ class mainApp(Tkinter.Tk):
 
 		self.num_URLtags = Tkinter.Label(self,text="URLTags: "+str(regexFinder.num_urltags))
 		self.num_URLtags.grid(column=3,row=y)
-
-
-
 
 if __name__ == "__main__":
 

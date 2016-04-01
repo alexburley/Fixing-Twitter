@@ -5,6 +5,7 @@ import spellchecker as sc
 import enchant
 from string import punctuation
 
+
 class RegexFinder:
 
 	def __init__(self):
@@ -14,6 +15,8 @@ class RegexFinder:
 		self.num_jwtags = 0
 		self.num_excesstags = 0
 		self.num_timetags = 0
+		self.total_chars = 0
+		self.outfile = "output.txt"
 
 		self.currentline = ""
 		self.d = enchant.Dict("en_US")
@@ -48,23 +51,33 @@ class RegexFinder:
 
 		line = line.rstrip('\r\n').lower()
 
+		if (self.outfile[len(self.outfile)-1] != "."):
+			self.outfiel = self.outfile+"."
+
 		if htags:
 			line = self.subHashtags(line)
+			self.outfile = self.outfile+"h"
 		if atags:
 			line = self.subAccountTags(line)
+			self.outfile = self.outfile+"a"
 		if urltags:
 			line = self.subURLTags(line)
+			self.outfile = self.outfile+"u"
 		if timetags:
 			line = self.subTimeTags(line)
+			self.outfile = self.outfile+"t"
 		if jwtags:
 			line = self.subJoinedWordTags(line)
+			self.outfile = self.outfile+"j"
 		if excesstags:
 			line = self.subExcessLetterTags(line)
+			self.outfile = self.outfile+"e"
 		#if excesstags:
 			#line = self.subExcessLetterTags(line)
 
 		line = self.subUniCode(line)
 		
+		self.total_chars += len(line)
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
 
 		#line = self.subExcessLetterTags(line)
@@ -73,7 +86,7 @@ class RegexFinder:
 		def spellReplace(m):
 			if (not self.d.check(m)):
 				if (len(self.d.suggest(m))>0):
-					print self.d.suggest(m)
+					#print self.d.suggest(m)
 					return self.d.suggest(m)[0]
 				else:
 					return m
@@ -81,10 +94,15 @@ class RegexFinder:
 				return m
 
 		tokens = map(spellReplace, tokens)
+		self.outfile = self.outfile+"s"
 		"""
 		if (excesstags):
 			tokens = self.insertExcessLetterTags(tokens)
 		"""
+		if (self.outfile[len(self.outfile)-1] != "."):
+			self.outfiel = self.outfile+"."
+		
+		self.outfile = self.outfile+"txt"
 		return tokens
 
 	def subLine(self,line):	
@@ -247,33 +265,12 @@ class RegexFinder:
 		line = unicode_tag.sub(normalizeUniCode,line)
 		return line
 
-	"""		
-
-	def insertExcessLetterTags(self,tokens):
-		count = 1
-		tagCount = 0
-
-		for token in xrange(len(tokens)):
-			for char in xrange(len(tokens[token])):
-				if (char+1 < len(tokens[token])):
-					if (tokens[token][char] == tokens[token][char+1]):
-						count += 1
-						if count>2:
-							tokens[token] = "0el_tag0"
-							tagCount += 1
-					else: count = 1
-
-		self.cur_excesstags = tagCount
-		self.num_excesstags += self.cur_excesstags
-		return tokens
-
-	"""
-
-
 
 	def outputLines(self,infile,options):
 
+		
 		print "-------------------------------------------------------------"
+		output = open(self.outfile,'w+')
 		for line in infile:
 			self.currentline = line
 			if line.strip():
@@ -288,6 +285,12 @@ class RegexFinder:
 							new_line = new_line+" "+token
 					print new_line
 					print "-------------------------------------------------------------"
+					print >> output, "Original: ", line.strip()
+					print >> output, "Normalised: ", new_line
+					print >> output, "Translated: "
+					print >> output, "\n"
+		output.close()
+
 
 
 
