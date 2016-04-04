@@ -129,6 +129,8 @@ class RegexFinder:
 		e.g "I hope #LFC #win today" : "I hope 0h_tag0 win today".
 		e.g "I hope we win today #LFC #Winners" : "I hope we win today"
 
+		WHAT ABOUT #soso dis.connected CONFLICT between hashtags and joined words
+
 
 	"""
 	def subHashtags(self,line):
