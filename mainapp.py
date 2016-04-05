@@ -39,9 +39,8 @@ class mainApp(Tkinter.Tk):
 		y = 0
 
 		#Button from which we will run our code
-		"""RENAME TO MEANINGFUL VARIABLE"""
-		self.button = Tkinter.Button(self,text=u"Run Code", command = self.onButtonClick)
-		self.button.grid(column=0,row=y)
+		self.runCode = Tkinter.Button(self,text=u"Run Code", command = self.onButtonClick)
+		self.runCode.grid(column=0,row=y)
 
 		#Bring up a window to open a file we want to use
 		self.fileOpen = Tkinter.Button(self,text="File",command=self.onFileClick)
@@ -65,13 +64,19 @@ class mainApp(Tkinter.Tk):
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
 
-		y = 1
+		y += 1
 
 		#If we want to search tweets containing only a specific tags
-		searchTags = Tkinter.Label(self,text="Output tweets with:")
-		searchTags.grid(column=0,row=y)		
+		self.searchTags = Tkinter.Label(self,text="Output tweets with:")
+		self.searchTags.grid(column=0,row=y)
 
-		y = 2
+		self.minLine = Tkinter.Label(self,text="Min Line")
+		self.minLine.grid(column=3,row=y)		
+
+		self.maxLine = Tkinter.Label(self,text="Max Line")
+		self.maxLine.grid(column=4,row=y)				
+
+		y += 1
 
 		#All tags
 		self.all = Tkinter.IntVar()
@@ -110,7 +115,7 @@ class mainApp(Tkinter.Tk):
 		#useNormalisationMethods = Tkinter.Label(self,text="Use Normalisation Methods")
 		#useNormalisationMethods.grid(column=0,row=y)
 
-		y = 4
+		y += 1
 
 		self.num_htags = Tkinter.Label(self,text="HTags: 0")
 		self.num_htags.grid(column=0,row=y)
@@ -126,12 +131,12 @@ class mainApp(Tkinter.Tk):
 
 
 
-		y = 5
+		y += 1
 
 		self.normalizationTitle = Tkinter.Label(self,text="Normalization Technique Selection")
 		self.normalizationTitle.grid(column=0,row=y)
 
-		y = 6
+		y += 1
 
 		self.hashTagN = Tkinter.IntVar()
 		self.hashTagB = Tkinter.Checkbutton(self, text="Hashtags", variable = self.hashTagN)
@@ -168,6 +173,83 @@ class mainApp(Tkinter.Tk):
 		self.excessTagB = Tkinter.Checkbutton(self, text= "ExcessLetters",variable=self.excessTagN)
 		self.excessTagB.grid(column=6,row=y)
 
+		y += 1
+
+		self.translationLabelAuto = Tkinter.Label(self,text="Evaluation (Auto")
+		self.translationLabelAuto.grid(column=0,row=y)
+
+		y += 1
+
+		self.translatedFileOpen = Tkinter.Button(self,text="Data File",command=self.uploadTranslatedFile)
+		self.translatedFileOpen.grid(column=0,row=y)
+
+		self.translatedFileLabel = Tkinter.Label(self,text="No File")
+		self.translatedFileLabel.grid(column=1,row=y)
+
+		self.evaluateAuto = Tkinter.Button(self,text="Evaluate",command=self.evaluateAuto)
+		self.evaluateAuto.grid(column=2,row=y)
+
+		self.bleuLabelAuto = Tkinter.Label(self,text="Bleu Value: ")
+		self.bleuLabelAuto.grid(column=3,row=y)
+
+		self.terLabelAuto = Tkinter.Label(self,text="TER Value: ")
+		self.terLabelAuto.grid(column=4,row=y)
+
+
+		y += 1
+
+		self.translationlabelMan = Tkinter.Label(self,text="Evaluation (Manual)")
+		self.translationlabelMan.grid(column=0,row=y)
+
+		y += 1
+
+		self.manualTweetLabel = Tkinter.Label(self,text="Enter Tweet")
+		self.manualTweetLabel.grid(column=0,row=y)
+
+		self.manualTweet = Tkinter.StringVar()
+		self.tweetEntry = Tkinter.Entry(self,textvariable=self.manualTweet)
+		self.tweetEntry.grid(column=1, row=y)
+
+		self.normTweetLabel = Tkinter.Label(self,text="Normalized")
+		self.normTweetLabel.grid(column=3,row=y)
+
+		self.normTweet = Tkinter.StringVar()
+		self.normTweetEntry = Tkinter.Entry(self,textvariable=self.normTweet)
+		#self.normTweetEntry.insert(0,"Hello")
+		self.normTweetEntry.grid(column=4,row=y)
+
+		y += 1
+
+		self.translatedOriginalLabel = Tkinter.Label(self,text="Translated Original")
+		self.translatedOriginalLabel.grid(column=0,row=y)
+
+		self.translatedOriginal = Tkinter.StringVar()
+		self.translatedOriginalEntry = Tkinter.Entry(self,textvariable=self.translatedOriginal)
+		self.translatedOriginalEntry.grid(column=1,row=y)
+
+		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
+		self.translatedNormalizedLabel.grid(column=3,row=y)
+
+		self.translatedNormalized = Tkinter.StringVar()
+		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized)
+		self.translatedNormalizedEntry.grid(column=4,row=y)
+
+		y += 1
+
+		#Bring up a window to open a file we want to use
+		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
+		self.eval.grid(column=2,row=y)
+
+		y += 1
+
+		self.bleuLabelMan = Tkinter.Label(self,text="Bleu Value: ")
+		self.bleuLabelMan.grid(column=3,row=y)
+
+		self.terLabelMan = Tkinter.Label(self,text="TER Value: ")
+		self.terLabelMan.grid(column=4,row=y)
+
+
+
 
 		#Configure grid and display
 		self.grid_columnconfigure(0,weight=1)
@@ -185,6 +267,9 @@ class mainApp(Tkinter.Tk):
 		self.filePath = askopenfilename()
 		self.uploadedFile = Tkinter.Label(self,text=self.filePath)
 		self.uploadedFile.grid(column=2,row=0)
+
+	def uploadTranslatedFile(self):
+		self.filePath = askopenfilename()
 
 	def extractTweets(self):
 		min = self.minValue.get()
@@ -243,6 +328,12 @@ class mainApp(Tkinter.Tk):
 
 		self.num_URLtags = Tkinter.Label(self,text="URLTags: "+str(regexFinder.num_urltags))
 		self.num_URLtags.grid(column=3,row=y)
+
+	def evaluateMan(self):
+		return 0
+
+	def evaluateAuto(self):
+		return 0
 
 if __name__ == "__main__":
 
