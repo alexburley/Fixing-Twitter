@@ -270,6 +270,16 @@ class RegexFinder:
 		line = unicode_tag.sub(normalizeUniCode,line)
 		return line
 
+	def returnLine(self,tokens):
+
+		new_line= ""
+		for token in tokens:
+			if new_line == "":
+				new_line = new_line+token
+			else:
+				new_line = new_line+" "+token
+
+		return new_line
 
 	def outputLines(self,infile,options):
 
@@ -278,17 +288,12 @@ class RegexFinder:
 		print "-------------------------------------------------------------"
 		output = open(self.outfile,'w+')
 		for line in infile:
-			self.currentline = line
+			self.currentline = unicode(line)
 			if line.strip():
 				tokens = self.subLine(line)
 				if (self.hasTags(options)):
 					print line
-					new_line=""
-					for token in tokens:
-						if new_line == "":
-							new_line = new_line+token
-						else:
-							new_line = new_line+" "+token
+					new_line = self.returnLine(tokens)
 					print new_line
 					print "-------------------------------------------------------------"
 					print >> output, "Original: ", line.strip()
@@ -299,6 +304,13 @@ class RegexFinder:
 					print >> output, "Perfect Translation: "
 					print >> output, "\n"
 		output.close()
+
+	def returnNormTweet(self,tweet,options):
+		self.options = options
+		if tweet.strip():
+			tokens = self.subLine(unicode(tweet))
+			return self.returnLine(tokens)
+	
 
 
 

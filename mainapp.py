@@ -210,6 +210,9 @@ class mainApp(Tkinter.Tk):
 		self.tweetEntry = Tkinter.Entry(self,textvariable=self.manualTweet)
 		self.tweetEntry.grid(column=1, row=y)
 
+		self.normalize = Tkinter.Button(self,text="Normalize",command=self.normalize)
+		self.normalize.grid(column=2,row=y)
+
 		self.normTweetLabel = Tkinter.Label(self,text="Normalized")
 		self.normTweetLabel.grid(column=3,row=y)
 
@@ -227,6 +230,9 @@ class mainApp(Tkinter.Tk):
 		self.translatedOriginalEntry = Tkinter.Entry(self,textvariable=self.translatedOriginal)
 		self.translatedOriginalEntry.grid(column=1,row=y)
 
+		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
+		self.eval.grid(column=2,row=y)
+
 		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
 		self.translatedNormalizedLabel.grid(column=3,row=y)
 
@@ -237,8 +243,7 @@ class mainApp(Tkinter.Tk):
 		y += 1
 
 		#Bring up a window to open a file we want to use
-		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
-		self.eval.grid(column=2,row=y)
+		
 
 		y += 1
 
@@ -270,6 +275,33 @@ class mainApp(Tkinter.Tk):
 
 	def uploadTranslatedFile(self):
 		self.filePath = askopenfilename()
+
+	def evaluateMan(self):
+		return 0
+
+	def evaluateAuto(self):
+		return 0
+
+	def normalize(self):
+		regexFinder = reg.RegexFinder()
+		tweet = self.manualTweet.get()
+		options = {}
+		options['hasJW'] = self.jwtag.get()
+		options['hasExcess'] = self.excesstag.get()
+		options['hasH'] = self.htag.get()
+		options['hasTime'] = self.timetag.get()
+		options['hasURL'] = self.urltag.get()
+		options['all'] = self.all.get()
+		options['normHTag'] = self.hashTagN.get()
+		options['normATag'] = self.accTagN.get()
+		options['normURLTag'] = self.urlTagN.get()
+		options['normTimeTag'] = self.timeTagN.get()
+		options['normSpellcheck'] = self.spellcheckN.get()
+		options['normJWTag'] = self.joinedWordsN.get()
+		options['normExcessTag'] = self.excessTagN.get()
+		normTweet = regexFinder.returnNormTweet(tweet,options)
+		self.normTweetEntry.delete(0,len(normTweet))
+		self.normTweetEntry.insert(0,normTweet)
 
 	def extractTweets(self):
 		min = self.minValue.get()
@@ -329,11 +361,7 @@ class mainApp(Tkinter.Tk):
 		self.num_URLtags = Tkinter.Label(self,text="URLTags: "+str(regexFinder.num_urltags))
 		self.num_URLtags.grid(column=3,row=y)
 
-	def evaluateMan(self):
-		return 0
 
-	def evaluateAuto(self):
-		return 0
 
 if __name__ == "__main__":
 
