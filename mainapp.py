@@ -212,12 +212,12 @@ class mainApp(Tkinter.Tk):
 		#row9
 		y += 1
 
-		self.manualTweetLabel = Tkinter.Label(self,text="Enter Tweet")
-		self.manualTweetLabel.grid(column=0,row=y)
+		self.origTweetLabel = Tkinter.Label(self,text="Enter Tweet")
+		self.origTweetLabel.grid(column=0,row=y)
 
-		self.manualTweet = Tkinter.StringVar()
-		self.tweetEntry = Tkinter.Entry(self,textvariable=self.manualTweet)
-		self.tweetEntry.grid(column=1, row=y)
+		self.origTweet = Tkinter.StringVar()
+		self.origTweetEntry = Tkinter.Entry(self,textvariable=self.origTweet)
+		self.origTweetEntry.grid(column=1, row=y)
 		
 		self.normTweetLabel = Tkinter.Label(self,text="Normalized")
 		self.normTweetLabel.grid(column=2,row=y)
@@ -237,12 +237,12 @@ class mainApp(Tkinter.Tk):
 		#row10
 		y += 1
 
-		self.translatedOriginalLabel = Tkinter.Label(self,text="Translated Original")
-		self.translatedOriginalLabel.grid(column=0,row=y)
+		self.translatedOrigLabel = Tkinter.Label(self,text="Translated Original")
+		self.translatedOrigLabel.grid(column=0,row=y)
 
-		self.translatedOriginal = Tkinter.StringVar()
-		self.translatedOriginalEntry = Tkinter.Entry(self,textvariable=self.translatedOriginal)
-		self.translatedOriginalEntry.grid(column=1,row=y)
+		self.translatedOrig = Tkinter.StringVar()
+		self.translatedOrigEntry = Tkinter.Entry(self,textvariable=self.translatedOrig)
+		self.translatedOrigEntry.grid(column=1,row=y)
 
 		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
 		self.translatedNormalizedLabel.grid(column=2,row=y)
@@ -251,12 +251,12 @@ class mainApp(Tkinter.Tk):
 		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized)
 		self.translatedNormalizedEntry.grid(column=3,row=y)
 
-		self.translatedPerfTweetLabel = Tkinter.Label(self,text="Translated Perfect")
-		self.translatedPerfTweetLabel.grid(column=4,row=y)
+		self.translatedPerfLabel = Tkinter.Label(self,text="Translated Perfect")
+		self.translatedPerfLabel.grid(column=4,row=y)
 
-		self.translatedPerfTweet = Tkinter.StringVar()
-		self.translatedPerfTweetEntry = Tkinter.Entry(self,textvariable=self.translatedPerfTweet)
-		self.translatedPerfTweetEntry.grid(column=5,row=y)
+		self.translatedPerf = Tkinter.StringVar()
+		self.translatedPerfEntry = Tkinter.Entry(self,textvariable=self.translatedPerf)
+		self.translatedPerfEntry.grid(column=5,row=y)
 
 		#row 11
 		y += 1
@@ -273,7 +273,14 @@ class mainApp(Tkinter.Tk):
 		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
 		self.eval.grid(column=3,row=y)
 
-		#row 13
+		#row13
+
+		y += 1
+
+		self.metricLabel = Tkinter.Label(self,text="Metrics")
+		self.metricLabel.grid(column=3,row=y)
+
+		#row14
 		y += 1
 
 		self.bleuLabelOriginal = Tkinter.Label(self,text="Bleu: ")
@@ -285,7 +292,7 @@ class mainApp(Tkinter.Tk):
 		self.bleuLabelPerf = Tkinter.Label(self,text = "Bleu: ")
 		self.bleuLabelPerf.grid(column = 5, row=y)
 
-		#row 14
+		#row15
 		y += 1
 
 		self.terLabelOriginal = Tkinter.Label(self,text="TER: ")
@@ -321,29 +328,25 @@ class mainApp(Tkinter.Tk):
 		self.filePath = askopenfilename()
 
 	def evaluateMan(self):
-		return 0
+		terOriginal = tc.ter(self.translatedOrig.get(),self.translatedPerf.get())
+		terNormalized = tc.ter(self.translatedNormalized.get(),self.translatedPerf.get())
+		terPerf = tc.ter(self.translatedPerf.get(),self.translatedPerf.get())
+
+		print "Translated Original = "+self.translatedOrig.get()+" - "+terOriginal
+		print "Translated Normalized = "+self.translatedNormalized.get()+" - "+terNormalized
+		print "Translated Perfect = "+self.translatedPerf.get()+" - "+terPerf
+
+		self.terLabelOriginal.config(text="TER: "+str(terOriginal))
+		self.terLabelNormalised.config(text="TER: "+str(terNormalized))
+		self.terLabelPerf.config(text="TER: "+str(terPerf))
 
 	def evaluateAuto(self):
-
 		return 0
 
 	def normalize(self):
 		regexFinder = reg.RegexFinder()
-		tweet = self.manualTweet.get()
-		options = {}
-		options['hasJW'] = self.jwtag.get()
-		options['hasExcess'] = self.excesstag.get()
-		options['hasH'] = self.htag.get()
-		options['hasTime'] = self.timetag.get()
-		options['hasURL'] = self.urltag.get()
-		options['all'] = self.all.get()
-		options['normHTag'] = self.hashTagN.get()
-		options['normATag'] = self.accTagN.get()
-		options['normURLTag'] = self.urlTagN.get()
-		options['normTimeTag'] = self.timeTagN.get()
-		options['normSpellcheck'] = self.spellcheckN.get()
-		options['normJWTag'] = self.joinedWordsN.get()
-		options['normExcessTag'] = self.excessTagN.get()
+		tweet = self.origTweet.get()
+		options = self.returnOptions()
 		normTweet = regexFinder.returnNormTweet(tweet,options)
 		self.normTweetEntry.delete(0,len(normTweet))
 		self.normTweetEntry.insert(0,normTweet)
@@ -370,10 +373,7 @@ class mainApp(Tkinter.Tk):
 		#filepath = printOut(min,max)
 		#print filepath
 
-	def mainCode(self):
-
-		infile = open(self.filePath,'r')
-		regexFinder = reg.RegexFinder()
+	def returnOptions(self):
 		options = {}
 		options['hasJW'] = self.jwtag.get()
 		options['hasExcess'] = self.excesstag.get()
@@ -388,6 +388,14 @@ class mainApp(Tkinter.Tk):
 		options['normSpellcheck'] = self.spellcheckN.get()
 		options['normJWTag'] = self.joinedWordsN.get()
 		options['normExcessTag'] = self.excessTagN.get()
+		return options
+
+
+	def mainCode(self):
+
+		infile = open(self.filePath,'r')
+		regexFinder = reg.RegexFinder()
+		options = self.returnOptions()
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
 		print regexFinder.total_chars

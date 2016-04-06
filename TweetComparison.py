@@ -2,16 +2,16 @@
 import pyter
 
 
-def naiveInput(self):
+def naiveInput():
 	return 0
 
-def jsonInput(self):
+def jsonInput():
 	return 0
 
-def terComparison(self,source,target):
+def ter(source,target):
 	source = source.split(" ")
 	target = target.split(" ")
 	return '%.3f' % pyter.ter(source, target)
 
-def bleuComparison(self):
+def bleu(source, target):
 	return 0
