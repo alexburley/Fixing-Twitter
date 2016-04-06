@@ -1,19 +1,17 @@
 
 import pyter
 
-class TweetComparison:
 
-	def __init__(self):
-		self.bleu_score = 0
+def naiveInput(self):
+	return 0
 
-	def naiveInput(self):
-		break
+def jsonInput(self):
+	return 0
 
-	def jsonInput(self):
-		break
+def terComparison(self,source,target):
+	source = source.split(" ")
+	target = target.split(" ")
+	return '%.3f' % pyter.ter(source, target)
 
-	def terComparison(self):
-		break
-
-	def bleuComparison(self):
-		break
+def bleuComparison(self):
+	return 0

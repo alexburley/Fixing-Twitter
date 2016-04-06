@@ -5,6 +5,7 @@ import re
 import RegexFinder as reg
 import unittest
 import spellchecker as sc
+import TweetComparison as tc
 import enchant
 import Tkinter
 import os
@@ -64,6 +65,7 @@ class mainApp(Tkinter.Tk):
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
 
+		#row 1
 		y += 1
 
 		#If we want to search tweets containing only a specific tags
@@ -76,6 +78,7 @@ class mainApp(Tkinter.Tk):
 		self.maxLine = Tkinter.Label(self,text="Max Line")
 		self.maxLine.grid(column=4,row=y)				
 
+		#row 2
 		y += 1
 
 		#All tags
@@ -115,6 +118,7 @@ class mainApp(Tkinter.Tk):
 		#useNormalisationMethods = Tkinter.Label(self,text="Use Normalisation Methods")
 		#useNormalisationMethods.grid(column=0,row=y)
 
+		#row 3
 		y += 1
 
 		self.num_htags = Tkinter.Label(self,text="HTags: 0")
@@ -130,12 +134,13 @@ class mainApp(Tkinter.Tk):
 		self.num_URLtags.grid(column=3,row=y)
 
 
-
+		#row4
 		y += 1
 
 		self.normalizationTitle = Tkinter.Label(self,text="Normalization Technique Selection")
 		self.normalizationTitle.grid(column=0,row=y)
 
+		#row5
 		y += 1
 
 		self.hashTagN = Tkinter.IntVar()
@@ -173,11 +178,13 @@ class mainApp(Tkinter.Tk):
 		self.excessTagB = Tkinter.Checkbutton(self, text= "ExcessLetters",variable=self.excessTagN)
 		self.excessTagB.grid(column=6,row=y)
 
+		#row6
 		y += 1
 
 		self.translationLabelAuto = Tkinter.Label(self,text="Evaluation (Auto")
 		self.translationLabelAuto.grid(column=0,row=y)
 
+		#row7
 		y += 1
 
 		self.translatedFileOpen = Tkinter.Button(self,text="Data File",command=self.uploadTranslatedFile)
@@ -196,11 +203,13 @@ class mainApp(Tkinter.Tk):
 		self.terLabelAuto.grid(column=4,row=y)
 
 
+		#row8
 		y += 1
 
 		self.translationlabelMan = Tkinter.Label(self,text="Evaluation (Manual)")
 		self.translationlabelMan.grid(column=0,row=y)
 
+		#row9
 		y += 1
 
 		self.manualTweetLabel = Tkinter.Label(self,text="Enter Tweet")
@@ -209,18 +218,23 @@ class mainApp(Tkinter.Tk):
 		self.manualTweet = Tkinter.StringVar()
 		self.tweetEntry = Tkinter.Entry(self,textvariable=self.manualTweet)
 		self.tweetEntry.grid(column=1, row=y)
-
-		self.normalize = Tkinter.Button(self,text="Normalize",command=self.normalize)
-		self.normalize.grid(column=2,row=y)
-
+		
 		self.normTweetLabel = Tkinter.Label(self,text="Normalized")
-		self.normTweetLabel.grid(column=3,row=y)
+		self.normTweetLabel.grid(column=2,row=y)
 
 		self.normTweet = Tkinter.StringVar()
 		self.normTweetEntry = Tkinter.Entry(self,textvariable=self.normTweet)
 		#self.normTweetEntry.insert(0,"Hello")
-		self.normTweetEntry.grid(column=4,row=y)
+		self.normTweetEntry.grid(column=3,row=y)
 
+		self.perfTweetLabel = Tkinter.Label(self,text="Perfect English")
+		self.perfTweetLabel.grid(column=4,row=y)
+
+		self.perfTweet = Tkinter.StringVar()
+		self.perfTweetEntry = Tkinter.Entry(self,textvariable=self.perfTweet)
+		self.perfTweetEntry.grid(column=5,row=y)
+
+		#row10
 		y += 1
 
 		self.translatedOriginalLabel = Tkinter.Label(self,text="Translated Original")
@@ -230,28 +244,58 @@ class mainApp(Tkinter.Tk):
 		self.translatedOriginalEntry = Tkinter.Entry(self,textvariable=self.translatedOriginal)
 		self.translatedOriginalEntry.grid(column=1,row=y)
 
-		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
-		self.eval.grid(column=2,row=y)
-
 		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
-		self.translatedNormalizedLabel.grid(column=3,row=y)
+		self.translatedNormalizedLabel.grid(column=2,row=y)
 
 		self.translatedNormalized = Tkinter.StringVar()
 		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized)
-		self.translatedNormalizedEntry.grid(column=4,row=y)
+		self.translatedNormalizedEntry.grid(column=3,row=y)
 
+		self.translatedPerfTweetLabel = Tkinter.Label(self,text="Translated Perfect")
+		self.translatedPerfTweetLabel.grid(column=4,row=y)
+
+		self.translatedPerfTweet = Tkinter.StringVar()
+		self.translatedPerfTweetEntry = Tkinter.Entry(self,textvariable=self.translatedPerfTweet)
+		self.translatedPerfTweetEntry.grid(column=5,row=y)
+
+		#row 11
 		y += 1
 
 		#Bring up a window to open a file we want to use
 		
 
+		#row 12
 		y += 1
 
-		self.bleuLabelMan = Tkinter.Label(self,text="Bleu Value: ")
-		self.bleuLabelMan.grid(column=3,row=y)
+		self.normalize = Tkinter.Button(self,text="Normalize",command=self.normalize)
+		self.normalize.grid(column=2,row=y)
 
-		self.terLabelMan = Tkinter.Label(self,text="TER Value: ")
-		self.terLabelMan.grid(column=4,row=y)
+		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
+		self.eval.grid(column=3,row=y)
+
+		#row 13
+		y += 1
+
+		self.bleuLabelOriginal = Tkinter.Label(self,text="Bleu: ")
+		self.bleuLabelOriginal.grid(column=1,row=y)
+
+		self.bleuLabelNormalised = Tkinter.Label(self,text="Bleu: ")
+		self.bleuLabelNormalised.grid(column=3,row=y)
+
+		self.bleuLabelPerf = Tkinter.Label(self,text = "Bleu: ")
+		self.bleuLabelPerf.grid(column = 5, row=y)
+
+		#row 14
+		y += 1
+
+		self.terLabelOriginal = Tkinter.Label(self,text="TER: ")
+		self.terLabelOriginal.grid(column=1,row=y)
+
+		self.terLabelNormalised = Tkinter.Label(self, text="TER: ")
+		self.terLabelNormalised.grid(column=3,row=y)
+
+		self.terLabelPerf = Tkinter.Label(self, text="TER: ")
+		self.terLabelPerf.grid(column=5,row=y)
 
 
 
@@ -280,6 +324,7 @@ class mainApp(Tkinter.Tk):
 		return 0
 
 	def evaluateAuto(self):
+
 		return 0
 
 	def normalize(self):
