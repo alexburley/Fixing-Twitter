@@ -313,6 +313,7 @@ class RegexFinder:
 					print >> output, "\n"
 					"""
 		print jsonDict
+		print >> output, json.dumps({'data': jsonDict},sort_keys=True, indent=4, separators=(',', ': '))
 		output.close()
 
 	def returnNormTweet(self,tweet,options):

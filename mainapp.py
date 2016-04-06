@@ -9,6 +9,7 @@ import TweetComparison as tc
 import enchant
 import Tkinter
 import os
+import json
 from tkFileDialog import askopenfilename
 
 """
@@ -29,6 +30,7 @@ class mainApp(Tkinter.Tk):
 		Tkinter.Tk.__init__(self,parent)
 		self.parent = parent
 		self.filePath = "test_tweets.txt"
+		self.inputJSON = "OutputJSON.txt"
 		self.initialize()
 
 	#Initialise GUI with all the controls we will be using
@@ -196,12 +198,27 @@ class mainApp(Tkinter.Tk):
 		self.evaluateAuto = Tkinter.Button(self,text="Evaluate",command=self.evaluateAuto)
 		self.evaluateAuto.grid(column=2,row=y)
 
-		self.bleuLabelAuto = Tkinter.Label(self,text="Bleu Value: ")
-		self.bleuLabelAuto.grid(column=3,row=y)
+		self.origAutoLabel = Tkinter.Label(self,text="Original")
+		self.origAutoLabel.grid(column=3,row=y)
 
-		self.terLabelAuto = Tkinter.Label(self,text="TER Value: ")
-		self.terLabelAuto.grid(column=4,row=y)
 
+		self.bleuLabelOrigAuto = Tkinter.Label(self,text="BLEU: ")
+		self.bleuLabelOrigAuto.grid(column=4,row=y)
+
+		self.terLabelOrigAuto = Tkinter.Label(self,text="TER: ")
+		self.terLabelOrigAuto.grid(column=5,row=y)
+
+
+		y += 1
+
+		self.normAutoLabel = Tkinter.Label(self,text="Normalized")
+		self.normAutoLabel.grid(column=3,row=y)
+
+		self.bleuLabelNormAuto = Tkinter.Label(self,text="BLEU: ")
+		self.bleuLabelNormAuto.grid(column = 4, row =y)
+
+		self.terLabelNormAuto = Tkinter.Label(self,text="TER: ")
+		self.terLabelNormAuto.grid(column=5, row=y)
 
 		#row8
 		y += 1
@@ -363,7 +380,64 @@ class mainApp(Tkinter.Tk):
 		self.bleuLabelPerf.config(text="BLEU: "+str(bleuPerfect))
 
 	def evaluateAuto(self):
-		return 0
+		jsonFile = open(self.inputJSON)
+		jsonStr = jsonFile.read()
+		jsonData = json.loads(jsonStr)['data']
+
+		size = len(jsonData)
+		avgOrigBleu= 0
+		avgNormBleu = 0
+		avgOrigTER = 0
+		avgNormTER = 0
+
+
+		for key in jsonData:
+
+			original = jsonData[key]['transOrig']
+			normalized = jsonData[key]['transNorm']
+			perfect = jsonData[key]['transPerf']
+
+			terOriginal = tc.ter(original, perfect)
+			terNormalized = tc.ter(normalized,perfect)
+			terPerf = tc.ter(perfect,perfect)
+
+			"""
+			print "Translated Original = "+original+" -TER- "+str(terOriginal)
+			print "Translated Normalized = "+normalized+" -TER- "+str(terNormalized)
+			print "Translated Perfect = "+perfect+" -TER- "+str(terPerf)
+			"""
+
+			#print "\n"
+
+			bleuOriginal = tc.bleu(original,perfect)
+			bleuNormalized = tc.bleu(normalized,perfect)
+			bleuPerfect = tc.bleu(perfect,perfect)
+
+
+			"""
+			print "Translated Original = "+original+" -BLEU- "+str(bleuOriginal)
+			print "Translated Normalized = "+normalized+" -BLEU- "+str(bleuNormalized)
+			print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
+			"""
+
+			avgOrigBleu += bleuOriginal
+			avgNormBleu += bleuNormalized
+			avgOrigTER += terOriginal
+			avgNormTER += terNormalized
+
+		avgOrigBleu = avgOrigBleu/size
+		avgNormBleu = avgNormBleu/size
+		avgOrigTER = avgOrigTER/size
+		avgNormTER = avgNormTER/size
+
+		self.terLabelOrigAuto.config(text="TER: "+str(avgOrigTER))
+		self.bleuLabelOrigAuto.config(text="BLEU: "+str(avgOrigBleu))
+
+		self.terLabelNormAuto.config(text="TER: "+str(avgNormTER))
+		self.bleuLabelNormAuto.config(text="BLEU: "+str(avgNormBleu))
+
+
+		#print jsonData
 
 	def normalize(self):
 		regexFinder = reg.RegexFinder()
@@ -372,6 +446,7 @@ class mainApp(Tkinter.Tk):
 		normTweet = regexFinder.returnNormTweet(tweet,options)
 		self.normTweetEntry.delete(0,len(normTweet))
 		self.normTweetEntry.insert(0,normTweet)
+
 
 	def extractTweets(self):
 		min = self.minValue.get()
