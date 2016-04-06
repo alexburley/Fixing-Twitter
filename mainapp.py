@@ -243,6 +243,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedOrig = Tkinter.StringVar()
 		self.translatedOrigEntry = Tkinter.Entry(self,textvariable=self.translatedOrig)
 		self.translatedOrigEntry.grid(column=1,row=y)
+		self.translatedOrigEntry.insert(0,"Sommes-nous #winers enfin? #LFC")
 
 		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
 		self.translatedNormalizedLabel.grid(column=2,row=y)
@@ -250,6 +251,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedNormalized = Tkinter.StringVar()
 		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized)
 		self.translatedNormalizedEntry.grid(column=3,row=y)
+		self.translatedNormalizedEntry.insert(0,"sommes-nous gagnants enfin bla bla don simon is my dad")
 
 		self.translatedPerfLabel = Tkinter.Label(self,text="Translated Perfect")
 		self.translatedPerfLabel.grid(column=4,row=y)
@@ -257,6 +259,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedPerf = Tkinter.StringVar()
 		self.translatedPerfEntry = Tkinter.Entry(self,textvariable=self.translatedPerf)
 		self.translatedPerfEntry.grid(column=5,row=y)
+		self.translatedPerfEntry.insert(0,"sommes-nous gagnants enfin")
 
 		#row 11
 		y += 1
@@ -328,17 +331,36 @@ class mainApp(Tkinter.Tk):
 		self.filePath = askopenfilename()
 
 	def evaluateMan(self):
-		terOriginal = tc.ter(self.translatedOrig.get(),self.translatedPerf.get())
-		terNormalized = tc.ter(self.translatedNormalized.get(),self.translatedPerf.get())
-		terPerf = tc.ter(self.translatedPerf.get(),self.translatedPerf.get())
 
-		print "Translated Original = "+self.translatedOrig.get()+" - "+terOriginal
-		print "Translated Normalized = "+self.translatedNormalized.get()+" - "+terNormalized
-		print "Translated Perfect = "+self.translatedPerf.get()+" - "+terPerf
+		original = self.translatedOrig.get()
+		normalized = self.translatedNormalized.get()
+		perfect = self.translatedPerf.get()
+
+		terOriginal = tc.ter(original, perfect)
+		terNormalized = tc.ter(normalized,perfect)
+		terPerf = tc.ter(perfect,perfect)
+
+		print "Translated Original = "+original+" -TER- "+str(terOriginal)
+		print "Translated Normalized = "+normalized+" -TER- "+str(terNormalized)
+		print "Translated Perfect = "+perfect+" -TER- "+str(terPerf)
 
 		self.terLabelOriginal.config(text="TER: "+str(terOriginal))
 		self.terLabelNormalised.config(text="TER: "+str(terNormalized))
 		self.terLabelPerf.config(text="TER: "+str(terPerf))
+
+		print "\n"
+
+		bleuOriginal = tc.bleu(original,perfect)
+		bleuNormalized = tc.bleu(normalized,perfect)
+		bleuPerfect = tc.bleu(perfect,perfect)
+
+		print "Translated Original = "+original+" -BLEU- "+str(bleuOriginal)
+		print "Translated Normalized = "+normalized+" -BLEU- "+str(bleuNormalized)
+		print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
+
+		self.bleuLabelOriginal.config(text="BLEU: "+str(bleuOriginal))
+		self.bleuLabelNormalised.config(text="BLEU: "+str(bleuNormalized))
+		self.bleuLabelPerf.config(text="BLEU: "+str(bleuPerfect))
 
 	def evaluateAuto(self):
 		return 0

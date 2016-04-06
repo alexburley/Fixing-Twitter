@@ -1,5 +1,6 @@
 
 import pyter
+import nltk
 
 
 def naiveInput():
@@ -11,7 +12,15 @@ def jsonInput():
 def ter(source,target):
 	source = source.split(" ")
 	target = target.split(" ")
-	return '%.3f' % pyter.ter(source, target)
+	val = pyter.ter(source,target)
+	if (val == 0):
+		return 0
+	
+	else:
+		return '%.3f' % pyter.ter(source, target)
+	
 
 def bleu(source, target):
-	return 0
+	source = source.split(" ")
+	target = target.split(" ")
+	return nltk.bleu(source,target)
