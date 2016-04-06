@@ -4,6 +4,7 @@ import spellchecker as sc
 #NEED PYTHON 32BIT
 import enchant
 from string import punctuation
+import json
 
 
 class RegexFinder:
@@ -284,7 +285,9 @@ class RegexFinder:
 	def outputLines(self,infile,options):
 
 		self.options = options
-		
+		jsonDict = {}
+		counter = 0
+
 		print "-------------------------------------------------------------"
 		output = open(self.outfile,'w+')
 		for line in infile:
@@ -292,10 +295,15 @@ class RegexFinder:
 			if line.strip():
 				tokens = self.subLine(line)
 				if (self.hasTags(options)):
+					counter += 1
 					print line
 					new_line = self.returnLine(tokens)
+					jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
 					print new_line
+
+					
 					print "-------------------------------------------------------------"
+					"""
 					print >> output, "Original: ", line.strip()
 					print >> output, "Normalised: ", new_line
 					print >> output, "Perfect Normalised: "
@@ -303,6 +311,8 @@ class RegexFinder:
 					print >> output, "Translated Normalised: "
 					print >> output, "Perfect Translation: "
 					print >> output, "\n"
+					"""
+		print jsonDict
 		output.close()
 
 	def returnNormTweet(self,tweet,options):
