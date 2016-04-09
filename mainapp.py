@@ -444,7 +444,8 @@ class mainApp(Tkinter.Tk):
 		tweet = self.origTweet.get()
 		options = self.returnOptions()
 		normTweet = regexFinder.returnNormTweet(tweet,options)
-		self.normTweetEntry.delete(0,len(normTweet))
+		if(len(self.normTweetEntry.get()) > 0):
+			self.normTweetEntry.delete(0,len(normTweet))
 		self.normTweetEntry.insert(0,normTweet)
 
 

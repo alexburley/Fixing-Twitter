@@ -162,7 +162,7 @@ class RegexFinder:
 						print htag
 						return htag
 					else:
-						return '0h_tag0'
+						return ''
 				else:
 					return m.group()
 			else:
@@ -183,7 +183,7 @@ class RegexFinder:
 			if (start == 0):
 				return ""
 			else:
-				return '0a_tag0'
+				return ''
 		line = a_tag.sub(normalizeAccountTag,line)
 		return line
 
@@ -199,7 +199,7 @@ class RegexFinder:
 			if (end == len(line)):
 				return ""
 			else:
-				return '0url_tag0'
+				return ''
 
 		line = url_tag.sub(normalizeURLTag, line)
 
@@ -296,9 +296,7 @@ class RegexFinder:
 
 	def subRetweet(self,line):
 
-		
-
-		rt_tag = re.compile('\brt\b')
+		rt_tag = re.compile('\\brt\\b')
 
 		def normalizeRT(m):
 			print "SUB RT"
