@@ -251,6 +251,12 @@ class mainApp(Tkinter.Tk):
 		self.perfTweetEntry = Tkinter.Entry(self,textvariable=self.perfTweet)
 		self.perfTweetEntry.grid(column=5,row=y)
 
+		self.numSubsLabelText = Tkinter.Label(self,text="#Substitutions: ")
+		self.numSubsLabelText.grid(column=6,row=y)
+
+		self.numSubsLabel = Tkinter.Label(self,text="-")
+		self.numSubsLabel.grid(column=7,row=y)
+
 		#row10
 		y += 1
 
@@ -496,21 +502,12 @@ class mainApp(Tkinter.Tk):
 		options = self.returnOptions()
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
-		print regexFinder.total_chars
 
-		y = 4
-
-		self.num_htags = Tkinter.Label(self,text="HTags: "+str(regexFinder.num_htags))
-		self.num_htags.grid(column=0,row=y)
-
-		self.num_jwtags = Tkinter.Label(self,text="JWTags: "+str(regexFinder.num_jwtags))
-		self.num_jwtags.grid(column=1,row=y)
-
-		self.num_excesstags = Tkinter.Label(self,text="ExcessTags: "+str(regexFinder.num_excesstags))
-		self.num_excesstags.grid(column=2,row=y)
-
-		self.num_URLtags = Tkinter.Label(self,text="URLTags: "+str(regexFinder.num_urltags))
-		self.num_URLtags.grid(column=3,row=y)
+		self.num_htags.config(text="HTags: "+str(regexFinder.num_htags))
+		self.num_jwtags.config(text="JWTags: "+str(regexFinder.num_jwtags))
+		self.num_excesstags.config(text="ExcessTags: "+str(regexFinder.num_excesstags))
+		self.num_URLtags.config(text="URLTags: "+str(regexFinder.num_urltags))
+		self.numSubsLabel.config(text=str(regexFinder.total_subs))
 
 
 
@@ -519,10 +516,3 @@ if __name__ == "__main__":
 	app = mainApp(None)
 	app.title('Fixing-Twitter by Alex Burley')
 	app.mainloop()
-
-#print "\n"
-#print regexFinder.num_htags
-#print regexFinder.num_atags
-#print regexFinder.num_urltags
-#print regexFinder.num_jwtags
-#print regexFinder.num_excesstags
