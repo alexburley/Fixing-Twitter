@@ -166,7 +166,7 @@ class mainApp(Tkinter.Tk):
 		self.urlTagB.grid(column=3,row=y)
 
 		self.timeTagN = Tkinter.IntVar()
-		self.timeTagN.set(1)
+		self.timeTagN.set(0)
 		self.timeTagB = Tkinter.Checkbutton(self,text="Timestamps", variable=self.timeTagN)
 		self.timeTagB.grid(column=4,row=y)
 

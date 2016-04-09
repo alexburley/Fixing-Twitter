@@ -23,4 +23,5 @@ def ter(source,target):
 def bleu(source, target):
 	source = source.split(" ")
 	target = target.split(" ")
-	return nltk.bleu(source,target)
+	weights = [0.25, 0.25, 0.25, 0.25]
+	return nltk.bleu(source,target,weights)

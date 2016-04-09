@@ -6,6 +6,12 @@ import enchant
 from string import punctuation
 import json
 
+"""
+
+Notes: Date lengthening from sep to september is present in google translate
+
+"""
+
 
 class RegexFinder:
 
@@ -16,6 +22,8 @@ class RegexFinder:
 		self.num_jwtags = 0
 		self.num_excesstags = 0
 		self.num_timetags = 0
+		self.num_rttags = 0
+		self.total_subs = 0
 		self.total_chars = 0
 		self.outfile = "output.txt"
 
@@ -77,6 +85,7 @@ class RegexFinder:
 			#line = self.subExcessLetterTags(line)
 
 		line = self.subUniCode(line)
+		line = self.subRetweet(line)
 		
 		self.total_chars += len(line)
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
@@ -84,25 +93,11 @@ class RegexFinder:
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
 
-		def spellReplace(m):
-			if (not self.d.check(m)):
-				if (len(self.d.suggest(m))>0):
-					#print self.d.suggest(m)
-					return self.d.suggest(m)[0]
-				else:
-					return m
-			else:
-				return m
-
 		if spellcheck:
-			tokens = map(spellReplace, tokens)
-		self.outfile = self.outfile+"s"
-		"""
-		if (excesstags):
-			tokens = self.insertExcessLetterTags(tokens)
-		"""
+			tokens = self.sub_spelling(tokens)
+
 		if (self.outfile[len(self.outfile)-1] != "."):
-			self.outfiel = self.outfile+"."
+			self.outfile = self.outfile+"."
 		
 		self.outfile = self.outfile+"txt"
 		return tokens
@@ -112,6 +107,23 @@ class RegexFinder:
 			self.options['normJWTag'],self.options['normURLTag'],self.options['normExcessTag'],
 				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
+
+	def sub_spelling(self,tokens):
+
+		self.outfile = self.outfile+"s"
+
+		def spellReplace(m):
+			self.total_subs += 1
+			if (not self.d.check(m)):
+				if (len(self.d.suggest(m))>0):
+					#print self.d.suggest(m)
+					return self.d.suggest(m)[0]
+				else:
+					return m
+			else:
+				return m
+
+		return map(spellReplace,tokens)
 
 	"""
 	Approach 1: Sub in the index of the token (in the original substitution then track back)
@@ -141,6 +153,7 @@ class RegexFinder:
 
 		def normalizeHashtags(m):
 			#RECURSE BACKWARDS
+			self.total_subs += 1
 			htag = m.group(2)
 			end = m.end()
 			if (end+2<len(line)):
@@ -165,6 +178,7 @@ class RegexFinder:
 		self.num_atags += self.cur_atags
 
 		def normalizeAccountTag(m):
+			self.total_subs += 1
 			start = m.start()
 			if (start == 0):
 				return ""
@@ -180,6 +194,7 @@ class RegexFinder:
 		num_urltags1 = len(re.findall(url_tag,line))
 
 		def normalizeURLTag(m):
+			self.total_subs += 1
 			end = m.end()
 			if (end == len(line)):
 				return ""
@@ -197,6 +212,9 @@ class RegexFinder:
 		self.num_urltags += self.cur_urltags
 		return line
 
+
+
+	"""IS THIS NECESSARY?"""
 	def subTimeTags(self,line):
 		time_tag = re.compile('[0-9]\.[0-9]')
 		self.cur_timetags = len(re.findall(time_tag,line))
@@ -219,6 +237,9 @@ class RegexFinder:
 		"""
 
 		def normalizeJoinedWordTags(m):
+
+			self.total_subs += 1
+
 			w1 = m.group(1)
 			w2 = m.group(2)
 
@@ -258,6 +279,7 @@ class RegexFinder:
 		self.num_excesstags += self.cur_excesstags
 
 		def normalizeExcessLetterTags(m):
+			self.total_subs += 1
 			return m.group(1)*2
 
 		line = excess_tag.sub(normalizeExcessLetterTags,line)
@@ -267,8 +289,25 @@ class RegexFinder:
 		unicode_tag = re.compile('\\u[0-9]+[a-zA-Z]*')
 
 		def normalizeUniCode(m):
+			self.total_subs += 1
 			return ''
 		line = unicode_tag.sub(normalizeUniCode,line)
+		return line
+
+	def subRetweet(self,line):
+
+		
+
+		rt_tag = re.compile('\brt\b')
+
+		def normalizeRT(m):
+			print "SUB RT"
+			self.num_rttags += 1
+			self.total_subs += 1
+			return ''
+
+		line = rt_tag.sub(normalizeRT,line)
+
 		return line
 
 	def returnLine(self,tokens):
