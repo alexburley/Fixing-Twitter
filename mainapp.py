@@ -293,11 +293,15 @@ class mainApp(Tkinter.Tk):
 		#row 12
 		y += 1
 
-		self.normalize = Tkinter.Button(self,text="Normalize",command=self.normalize)
-		self.normalize.grid(column=2,row=y)
+		self.normalizeButton = Tkinter.Button(self,text="Normalize",command=self.normalize)
+		self.normalizeButton.grid(column=2,row=y)
 
-		self.eval = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
-		self.eval.grid(column=3,row=y)
+		self.evaluateButton = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
+		self.evaluateButton.grid(column=3,row=y)
+
+		self.clearButton = Tkinter.Button(self,text="Clear",command=self.clear)
+		self.clearButton.grid(column=4,row=y)
+
 
 		#row13
 
@@ -451,8 +455,22 @@ class mainApp(Tkinter.Tk):
 		options = self.returnOptions()
 		normTweet = regexFinder.returnNormTweet(tweet,options)
 		if(len(self.normTweetEntry.get()) > 0):
-			self.normTweetEntry.delete(0,len(normTweet))
+			self.normTweetEntry.delete(0,len(self.normTweetEntry.get()))
 		self.normTweetEntry.insert(0,normTweet)
+
+	def clear(self):
+		if(len(self.normTweetEntry.get()) > 0):
+			self.normTweetEntry.delete(0,len(self.normTweetEntry.get()))
+		if(len(self.origTweetEntry.get()) > 0):
+			self.origTweetEntry.delete(0,len(self.origTweetEntry.get()))
+		if(len(self.perfTweetEntry.get()) > 0):
+			self.perfTweetEntry.delete(0,len(self.perfTweetEntry.get()))
+		if(len(self.translatedPerfEntry.get()) > 0):
+			self.translatedPerfEntry.delete(0,len(self.translatedPerfEntry.get()))
+		if(len(self.translatedOrigEntry.get()) > 0):
+			self.translatedOrigEntry.delete(0,len(self.translatedOrigEntry.get()))
+		if(len(self.translatedNormalizedEntry.get()) > 0):
+			self.translatedNormalizedEntry.delete(0,len(self.translatedNormalizedEntry.get()))
 
 
 	def extractTweets(self):

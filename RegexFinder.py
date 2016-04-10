@@ -108,6 +108,15 @@ class RegexFinder:
 				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
 
+	def sub_abbreviations(self,tokens):
+
+		def abbrevReplace(m):
+			self.total_subs += 1
+			if (m == "u"):
+				return "you"
+			
+
+	"""Use regex for dont and arent to turn into do not and are"""
 	def sub_spelling(self,tokens):
 
 		self.outfile = self.outfile+"s"
@@ -183,7 +192,7 @@ class RegexFinder:
 			if (start == 0):
 				return ""
 			else:
-				return ''
+				return '0acc_tag0'
 		line = a_tag.sub(normalizeAccountTag,line)
 		return line
 
@@ -195,11 +204,14 @@ class RegexFinder:
 
 		def normalizeURLTag(m):
 			self.total_subs += 1
+			"""
 			end = m.end()
 			if (end == len(line)):
 				return ""
 			else:
 				return ''
+			"""
+			return '0url_tag0'
 
 		line = url_tag.sub(normalizeURLTag, line)
 
@@ -243,6 +255,10 @@ class RegexFinder:
 			w1 = m.group(1)
 			w2 = m.group(2)
 
+			if (w1.isdigit()):
+				self.total_subs = self.total_subs - 1
+				return m.group()
+
 			w1Check = self.d.check(w1)
 			w2Check = self.d.check(w2)
 
@@ -271,7 +287,9 @@ class RegexFinder:
 
 
 	"""
-		What about numbers, what about roman numerals. 
+		What about numbers, what about roman numerals.
+		MENTION IN DISS ABOUT TESTING GOOGLE TRANSLATE 
+		MENTION ABOUT CUTTING DOWN TO SINGLE LETTER
 	"""
 	def subExcessLetterTags(self,line):
 		excess_tag = re.compile(r'(.)\1{2,}')
@@ -280,7 +298,7 @@ class RegexFinder:
 
 		def normalizeExcessLetterTags(m):
 			self.total_subs += 1
-			return m.group(1)*2
+			return m.group(1)*1
 
 		line = excess_tag.sub(normalizeExcessLetterTags,line)
 		return line
@@ -349,7 +367,7 @@ class RegexFinder:
 					print >> output, "Perfect Translation: "
 					print >> output, "\n"
 					"""
-		print jsonDict
+		#print jsonDict
 		print >> output, json.dumps({'data': jsonDict},sort_keys=True, indent=4, separators=(',', ': '))
 		output.close()
 
