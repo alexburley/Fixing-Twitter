@@ -165,15 +165,21 @@ class RegexFinder:
 			self.total_subs += 1
 			htag = m.group(2)
 			end = m.end()
+			#IF the hashtag is not the last word in the tweet
 			if (end+2<len(line)):
+				#if the word after the hashtag is not another hashtag
 				if(line[end+2] != '#'):
+					#If the word is in the dictionary
 					if(self.d.check(htag)):
-						print htag
 						return htag
 					else:
-						return ''
+						"""This may be an opportunity to solve the misspelled hashtags problem"""
+						return '0h_tag0'
+				#ELSE if it is another hashtag
 				else:
+					print "returned group (h_tag)"
 					return m.group()
+			#ELSE if is is the last word it is likely not part of the tweets meaning
 			else:
 				return ""
 
@@ -273,8 +279,8 @@ class RegexFinder:
 				w2New = ""
 			#check for more than 1 fullstop
 			if (not w1Check or not w2Check):
-				print w1+": "+w1New
-				print w2+": "+w2New
+				#print w1+": "+w1New
+				#print w2+": "+w2New
 				if (self.d.check(w1+w2)):
 					return w1+w2
 				else:
@@ -317,7 +323,7 @@ class RegexFinder:
 		rt_tag = re.compile('\\brt\\b')
 
 		def normalizeRT(m):
-			print "SUB RT"
+			#print "SUB RT"
 			self.num_rttags += 1
 			self.total_subs += 1
 			return ''
