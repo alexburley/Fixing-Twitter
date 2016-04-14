@@ -25,11 +25,24 @@ class RegexFinder:
 		self.num_rttags = 0
 		self.total_subs = 0
 		self.total_chars = 0
+		self.slang_dict = {}
+		self.corpus_loaded = 0
 		self.outfile = "output.txt"
 
 		self.currentline = ""
-		self.d = enchant.Dict("en_US")
-	
+		self.d = enchant.Dict("en_GB")
+
+	def initializeSlang(self):
+
+		self.slang_dict["lol"] = "laugh out loud"
+		self.slang_dict["g2g"] = "got to go"
+		self.slang_dict["b4"] = "before"
+		self.slang_dict["gr8"] = "great"
+		self.slang_dict["2morrow"] = "tomorrow"
+		self.slang_dict["2geva"] = "together"
+		self.slang_dict["r"] = "are"
+		self.slang_dict["u"] = "you"
+
 	def hasTags(self, options):
 
 		flag = 1
@@ -173,7 +186,7 @@ class RegexFinder:
 					if(self.d.check(htag)):
 						return htag
 					else:
-						"""This may be an opportunity to solve the misspelled hashtags problem"""
+						"""This may be an opportunity to solve the misspelled hashtags problem or joined words"""
 						return '0h_tag0'
 				#ELSE if it is another hashtag
 				else:

@@ -31,6 +31,7 @@ class mainApp(Tkinter.Tk):
 		self.parent = parent
 		self.filePath = "test_tweets.txt"
 		self.inputJSON = "OutputJSON.txt"
+		self.test_corpus = "test_corpus.txt"
 		self.initialize()
 
 	#Initialise GUI with all the controls we will be using
@@ -45,24 +46,29 @@ class mainApp(Tkinter.Tk):
 		self.runCode = Tkinter.Button(self,text=u"Run Code", command = self.onButtonClick)
 		self.runCode.grid(column=0,row=y)
 
+		self.load_corpus_flag = Tkinter.IntVar()
+		self.load_corpus_flag.set(1)
+		self.load_corpus_flag_box = Tkinter.Checkbutton(self, text="Load Corpus?",variable = self.load_corpus_flag)
+		self.load_corpus_flag_box.grid(column=1,row=y)
+
 		#Bring up a window to open a file we want to use
 		self.fileOpen = Tkinter.Button(self,text="File",command=self.onFileClick)
-		self.fileOpen.grid(column=1,row=y)
+		self.fileOpen.grid(column=2,row=y)
 
 		#Label containing the name of the current uploaded file in the system
 		self.uploadedFile = Tkinter.Label(self,text="No File Uploaded")
-		self.uploadedFile.grid(column=2,row=y)
+		self.uploadedFile.grid(column=3,row=y)
 
 		self.minValue = Tkinter.StringVar()
 		self.minEntry = Tkinter.Entry(self,textvariable=self.minValue)
-		self.minEntry.grid(column=3, row=y)
+		self.minEntry.grid(column=4, row=y)
 
 		self.maxValue = Tkinter.StringVar()
 		self.maxEntry = Tkinter.Entry(self, textvariable=self.maxValue)
-		self.maxEntry.grid(column=4, row=y)
+		self.maxEntry.grid(column=5, row=y)
 
 		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets())
-		self.extractButton.grid(column=5,row=y)
+		self.extractButton.grid(column=6,row=y)
 
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
@@ -472,6 +478,16 @@ class mainApp(Tkinter.Tk):
 		if(len(self.translatedNormalizedEntry.get()) > 0):
 			self.translatedNormalizedEntry.delete(0,len(self.translatedNormalizedEntry.get()))
 
+	def loadCorpus(self,reg):
+		
+		infile = open(self.test_corpus,'r')
+		for line in infile:
+			line = line.rstrip('\r\n').lower()
+			if (not (reg.d.check(line))):
+				reg.d.add_to_session(line)	
+		reg.corpus_loaded = 1
+
+
 
 	def extractTweets(self):
 		min = self.minValue.get()
@@ -517,6 +533,8 @@ class mainApp(Tkinter.Tk):
 
 		infile = open(self.filePath,'r')
 		regexFinder = reg.RegexFinder()
+		if (not (regexFinder.corpus_loaded) and (self.load_corpus_flag.get())):
+			self.loadCorpus(regexFinder)
 		options = self.returnOptions()
 		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
 		regexFinder.outputLines(infile,options)
