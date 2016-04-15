@@ -6,7 +6,7 @@ import RegexFinder as reg
 import unittest
 import spellchecker as sc
 import TweetComparison as tc
-#import TweetExtractor as TE
+import TweetExtractor as te
 import enchant
 import Tkinter
 import os
@@ -31,6 +31,7 @@ class mainApp(Tkinter.Tk):
 		Tkinter.Tk.__init__(self,parent)
 		self.parent = parent
 		self.filePath = "test_tweets.txt"
+		self.original_tweets_path = "tweetsforanalysis.en"
 		self.inputJSON = "OutputJSON.txt"
 		self.test_corpus = "test_corpus.txt"
 		self.initialize()
@@ -53,7 +54,7 @@ class mainApp(Tkinter.Tk):
 		self.load_corpus_flag_box.grid(column=1,row=y)
 
 		#Bring up a window to open a file we want to use
-		self.fileOpen = Tkinter.Button(self,text="File",command=self.onFileClick)
+		self.fileOpen = Tkinter.Button(self,text="File",command=self.uploadOriginalTweets)
 		self.fileOpen.grid(column=2,row=y)
 
 		#Label containing the name of the current uploaded file in the system
@@ -61,14 +62,16 @@ class mainApp(Tkinter.Tk):
 		self.uploadedFile.grid(column=3,row=y)
 
 		self.minValue = Tkinter.StringVar()
+		self.minValue.set("100")
 		self.minEntry = Tkinter.Entry(self,textvariable=self.minValue)
 		self.minEntry.grid(column=4, row=y)
 
 		self.maxValue = Tkinter.StringVar()
+		self.maxValue.set("200")
 		self.maxEntry = Tkinter.Entry(self, textvariable=self.maxValue)
 		self.maxEntry.grid(column=5, row=y)
 
-		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets())
+		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets)
 		self.extractButton.grid(column=6,row=y)
 
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
@@ -82,10 +85,10 @@ class mainApp(Tkinter.Tk):
 		self.searchTags.grid(column=0,row=y)
 
 		self.minLine = Tkinter.Label(self,text="Min Line")
-		self.minLine.grid(column=3,row=y)		
+		self.minLine.grid(column=4,row=y)		
 
 		self.maxLine = Tkinter.Label(self,text="Max Line")
-		self.maxLine.grid(column=4,row=y)				
+		self.maxLine.grid(column=5,row=y)				
 
 		#row 2
 		y += 1
@@ -356,10 +359,9 @@ class mainApp(Tkinter.Tk):
 	def onButtonClick(self):
 		self.mainCode()
 
-	def onFileClick(self):
+	def uploadOriginalTweets(self):
 		self.filePath = askopenfilename()
-		self.uploadedFile = Tkinter.Label(self,text=self.filePath)
-		self.uploadedFile.grid(column=2,row=0)
+		self.uploadedFile.config(text=self.filePath)
 
 	def uploadTranslatedFile(self):
 		self.filePath = askopenfilename()
@@ -491,6 +493,10 @@ class mainApp(Tkinter.Tk):
 	def extractTweets(self):
 		min = self.minValue.get()
 		max = self.maxValue.get()
+		self.original_tweets_path = askopenfilename()
+		te.output(int(min),int(max),self.original_tweets_path)
+
+
 
 		def printOut(base,max):
 
