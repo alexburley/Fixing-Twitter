@@ -6,6 +6,7 @@ import RegexFinder as reg
 import unittest
 import spellchecker as sc
 import TweetComparison as tc
+#import TweetExtractor as TE
 import enchant
 import Tkinter
 import os
@@ -486,8 +487,6 @@ class mainApp(Tkinter.Tk):
 			if (not (reg.d.check(line))):
 				reg.d.add_to_session(line)	
 		reg.corpus_loaded = 1
-
-
 
 	def extractTweets(self):
 		min = self.minValue.get()

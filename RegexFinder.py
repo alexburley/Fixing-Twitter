@@ -141,6 +141,7 @@ class RegexFinder:
 					#print self.d.suggest(m)
 					return self.d.suggest(m)[0]
 				else:
+					print 
 					return m
 			else:
 				return m
@@ -174,17 +175,18 @@ class RegexFinder:
 		self.num_htags += self.cur_htags
 
 		def normalizeHashtags(m):
-			#RECURSE BACKWARDS
+			print m
 			self.total_subs += 1
 			htag = m.group(2)
 			end = m.end()
 			#IF the hashtag is not the last word in the tweet
 			if (end+2<len(line)):
 				#if the word after the hashtag is not another hashtag
-				if(line[end+2] != '#'):
+				if(line[end+2] != '#' ): #potentially check if it is a word aswell?
 					#If the word is in the dictionary
 					if(self.d.check(htag)):
 						return htag
+					#ELIF CHECK IF EXCESSS LETTER
 					else:
 						"""This may be an opportunity to solve the misspelled hashtags problem or joined words"""
 						return '0h_tag0'
@@ -194,7 +196,7 @@ class RegexFinder:
 					return m.group()
 			#ELSE if is is the last word it is likely not part of the tweets meaning
 			else:
-				return ""
+				return "0h_tag0"
 
 		line = h_tag.sub(normalizeHashtags, line)
 
@@ -218,6 +220,7 @@ class RegexFinder:
 	def subURLTags(self,line):
 
 		"""MERGE INTO ONE RE"""
+		#[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
 		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 		num_urltags1 = len(re.findall(url_tag,line))
 
@@ -254,7 +257,8 @@ class RegexFinder:
 		return line
 
 	"""
-		what about elipses
+		what about elipses?
+		does not look at I.AM.A.BEAST (recursive gathering of words?)
 	"""
 	def subJoinedWordTags(self,line):
 		jw_tag = re.compile('(\w+)\.(\w+)')
@@ -281,6 +285,7 @@ class RegexFinder:
 			w1Check = self.d.check(w1)
 			w2Check = self.d.check(w2)
 
+			#If the suggestions return an array with items
 			if (len(self.d.suggest(w1))>0):
 				w1New = self.d.suggest(w1)[0]
 			else:
@@ -294,6 +299,8 @@ class RegexFinder:
 			if (not w1Check or not w2Check):
 				#print w1+": "+w1New
 				#print w2+": "+w2New
+
+				#IF W1/W2 have no suggestions, check if they work when combined with W1/W2
 				if (self.d.check(w1+w2)):
 					return w1+w2
 				else:
