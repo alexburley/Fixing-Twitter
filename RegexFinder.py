@@ -31,6 +31,7 @@ class RegexFinder:
 
 		self.currentline = ""
 		self.d = enchant.Dict("en_GB")
+		self.initializeSlang()
 
 	def initializeSlang(self):
 
@@ -112,9 +113,10 @@ class RegexFinder:
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
+		tokens = self.subSlang(tokens)
 
 		if spellcheck:
-			tokens = self.sub_spelling(tokens)
+			tokens = self.subSpelling(tokens)
 
 		return tokens
 
@@ -123,6 +125,16 @@ class RegexFinder:
 			self.options['normJWTag'],self.options['normURLTag'],self.options['normExcessTag'],
 				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
+
+	def subSlang(self,tokens):
+
+		def slangReplace(m):
+			if(m in self.slang_dict):
+				return self.slang_dict[m]
+			else:
+				return m
+				
+		return map(slangReplace,tokens)
 
 
 
@@ -136,7 +148,7 @@ class RegexFinder:
 		return 0
 
 	"""Use regex for dont and arent to turn into do not and are"""
-	def sub_spelling(self,tokens):
+	def subSpelling(self,tokens):
 
 		def spellReplace(m):
 			self.total_subs += 1
