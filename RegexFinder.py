@@ -78,7 +78,10 @@ class RegexFinder:
 	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags,spellcheck):
 
 
-		self.subsArray = []
+		self.htagArray = []
+		self.atagArray = []
+		self.urltagArray = []
+
 		line = line.rstrip('\r\n').lower()
 
 		if htags:
@@ -115,8 +118,24 @@ class RegexFinder:
 		tokens = re.split('\s',line)
 		tokens = self.subSlang(tokens)
 
+		
+
 		if spellcheck:
 			tokens = self.subSpelling(tokens)
+
+		for word in xrange (len(tokens)):
+			if (tokens[word] == "0h_tag0"):
+				htag = self.htagArray.pop(0)
+				tokens[word] = htag
+			if (tokens[word] == "0acc_tag0"):
+				atag = self.atagArray.pop(0)
+				tokens[word] = atag
+			if (tokens[word] == "0url_tag0"):
+				urltag = self.urltagArray.pop(0)
+				tokens[word] = urltag
+			if (tokens[word] == "0eg0"):
+				tokens[word] = "e.g."
+
 
 		return tokens
 
@@ -136,19 +155,8 @@ class RegexFinder:
 				
 		return map(slangReplace,tokens)
 
-	def subAbbreviations(self,tokens):
-
-		def abbrevReplace(m):
-			self.total_subs += 1
-			if (m == "u"):
-				return "you"
-
-		return 0
-
 	"""Use regex for dont and arent to turn into do not and are"""
 	def subSpelling(self,tokens):
-
-
 
 		def spellReplace(m):
 
@@ -212,6 +220,7 @@ class RegexFinder:
 					#ELIF CHECK IF EXCESSS LETTER
 					else:
 						"""This may be an opportunity to solve the misspelled hashtags problem or joined words"""
+						self.htagArray.append(m.group())
 						return '0h_tag0'
 				#ELSE if it is another hashtag
 				else:
@@ -219,6 +228,7 @@ class RegexFinder:
 					return m.group()
 			#ELSE if is is the last word it is likely not part of the tweets meaning
 			else:
+				self.htagArray.append(m.group())
 				return "0h_tag0"
 
 		line = h_tag.sub(normalizeHashtags, line)
@@ -232,6 +242,7 @@ class RegexFinder:
 
 		def normalizeAccountTag(m):
 			self.total_subs += 1
+			self.atagArray.append(m.group())
 			start = m.start()
 			if (start == 0):
 				return "0acc_tag0"
@@ -258,6 +269,7 @@ class RegexFinder:
 			else:
 				return ''
 			"""
+			self.urltagArray.append(m.group())
 			return '0url_tag0'
 
 		line = url_tag.sub(normalizeURLTag, line)
@@ -290,11 +302,6 @@ class RegexFinder:
 		self.cur_jwtags = len(re.findall(jw_tag,line))
 		self.num_jwtags += self.cur_jwtags
 		joinedwords=re.findall(jw_tag,line)
-
-		"""
-			Potentially make a list of common words that we can suggest to, machine learning?
-
-		"""
 
 		def normalizeJoinedWordTags(m):
 
