@@ -42,6 +42,11 @@ class RegexFinder:
 		self.slang_dict["2geva"] = "together"
 		self.slang_dict["r"] = "are"
 		self.slang_dict["u"] = "you"
+		self.slang_dict["brill"] = "brilliant"
+		self.slang_dict["vino"] = "wine"
+		self.slang_dict["n"] = "and"
+		self.slang_dict["ur"] = "your"
+		self.slang_dict["every1"] = "everyone"
 
 	def hasTags(self, options):
 
@@ -71,34 +76,36 @@ class RegexFinder:
 
 	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags,spellcheck):
 
+
+		self.subsArray = []
 		line = line.rstrip('\r\n').lower()
 
-		if (self.outfile[len(self.outfile)-1] != "."):
-			self.outfile = self.outfile+"."
-
 		if htags:
+			#print line
 			line = self.subHashtags(line)
-			self.outfile = self.outfile+"h"
 		if atags:
+			#print line
 			line = self.subAccountTags(line)
-			self.outfile = self.outfile+"a"
 		if urltags:
+			#print line
 			line = self.subURLTags(line)
-			self.outfile = self.outfile+"u"
 		if timetags:
+			#print line
 			line = self.subTimeTags(line)
-			self.outfile = self.outfile+"t"
 		if jwtags:
+			#print line
 			line = self.subJoinedWordTags(line)
-			self.outfile = self.outfile+"j"
 		if excesstags:
+			#print line
 			line = self.subExcessLetterTags(line)
-			self.outfile = self.outfile+"e"
-		#if excesstags:
-			#line = self.subExcessLetterTags(line)
 
-		line = self.subUniCode(line)
+		#print line
+		#line = self.subUniCode(line)
+		#print line
 		line = self.subRetweet(line)
+		#print line
+		line = self.subAnd(line)
+		#print line
 		
 		self.total_chars += len(line)
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
@@ -109,10 +116,6 @@ class RegexFinder:
 		if spellcheck:
 			tokens = self.sub_spelling(tokens)
 
-		if (self.outfile[len(self.outfile)-1] != "."):
-			self.outfile = self.outfile+"."
-		
-		self.outfile = self.outfile+"txt"
 		return tokens
 
 	def subLine(self,line):	
@@ -121,40 +124,43 @@ class RegexFinder:
 				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
 
-	def sub_abbreviations(self,tokens):
+
+
+	def subAbbreviations(self,tokens):
 
 		def abbrevReplace(m):
 			self.total_subs += 1
 			if (m == "u"):
 				return "you"
-			
+
+		return 0
 
 	"""Use regex for dont and arent to turn into do not and are"""
 	def sub_spelling(self,tokens):
 
-		self.outfile = self.outfile+"s"
-
 		def spellReplace(m):
 			self.total_subs += 1
-			if (not self.d.check(m)):
-				if (len(self.d.suggest(m))>0):
-					#print self.d.suggest(m)
-					return self.d.suggest(m)[0]
+			if(len(m) > 0):
+				if (not self.d.check(m)):
+					print m
+					if (len(self.d.suggest(m))>0):
+						#print self.d.suggest(m)
+						return self.d.suggest(m)[0]
+					else:
+						print 
+						return m
 				else:
-					print 
 					return m
 			else:
 				return m
 
 		return map(spellReplace,tokens)
 
-	"""
-	Approach 1: Sub in the index of the token (in the original substitution then track back)
-	Approach 2: 
-
-
-	"""
-
+	def subAnd(self,line):
+		a_tag = re.compile('(^|\s+)qwe45rty(\s+|$)')
+		line = a_tag.sub("and",line)
+		return line
+		
 	""" WHAT ABOUT punctuation hashtags like #l'pool
 
 		We want to check if the hashtag is part of the sentence of the tweet. If not we can remove it
@@ -175,7 +181,7 @@ class RegexFinder:
 		self.num_htags += self.cur_htags
 
 		def normalizeHashtags(m):
-			print m
+			print m.group()
 			self.total_subs += 1
 			htag = m.group(2)
 			end = m.end()
@@ -211,7 +217,7 @@ class RegexFinder:
 			self.total_subs += 1
 			start = m.start()
 			if (start == 0):
-				return ""
+				return "0acc_tag0"
 			else:
 				return '0acc_tag0'
 		line = a_tag.sub(normalizeAccountTag,line)
@@ -323,6 +329,8 @@ class RegexFinder:
 		self.num_excesstags += self.cur_excesstags
 
 		def normalizeExcessLetterTags(m):
+			if(m.group(1).isdigit()):
+				return m.group()
 			self.total_subs += 1
 			return m.group(1)*1
 
@@ -330,7 +338,7 @@ class RegexFinder:
 		return line
 
 	def subUniCode(self,line):
-		unicode_tag = re.compile('\\u[0-9]+[a-zA-Z]*')
+		unicode_tag = re.compile('[^\u0000-\u007F]+')
 
 		def normalizeUniCode(m):
 			self.total_subs += 1
@@ -381,20 +389,10 @@ class RegexFinder:
 					new_line = self.returnLine(tokens)
 					jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
 					print new_line
-
-					
 					print "-------------------------------------------------------------"
-					"""
-					print >> output, "Original: ", line.strip()
-					print >> output, "Normalised: ", new_line
-					print >> output, "Perfect Normalised: "
-					print >> output, "Translated Original: "
-					print >> output, "Translated Normalised: "
-					print >> output, "Perfect Translation: "
-					print >> output, "\n"
-					"""
+
 		#print jsonDict
-		print >> output, json.dumps({'data': jsonDict},sort_keys=True, indent=4, separators=(',', ': '))
+		print >> output, json.dumps({'data': jsonDict}, indent=4, separators=(',', ': '))
 		output.close()
 
 	def returnNormTweet(self,tweet,options):

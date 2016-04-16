@@ -34,6 +34,7 @@ class mainApp(Tkinter.Tk):
 		self.original_tweets_path = "tweetsforanalysis.en"
 		self.inputJSON = "OutputJSON.txt"
 		self.test_corpus = "test_corpus.txt"
+		self.d = enchant.Dict("en_GB")
 		self.initialize()
 
 	#Initialise GUI with all the controls we will be using
@@ -193,7 +194,7 @@ class mainApp(Tkinter.Tk):
 		#row6
 		y += 1
 
-		self.translationLabelAuto = Tkinter.Label(self,text="Evaluation (Auto")
+		self.translationLabelAuto = Tkinter.Label(self,text="Evaluation (Auto)")
 		self.translationLabelAuto.grid(column=0,row=y)
 
 		#row7
@@ -344,6 +345,18 @@ class mainApp(Tkinter.Tk):
 		self.terLabelPerf = Tkinter.Label(self, text="TER: ")
 		self.terLabelPerf.grid(column=5,row=y)
 
+		#row16
+		y += 1
+
+		self.word = Tkinter.StringVar()
+		self.wordEntry = Tkinter.Entry(self,textvariable=self.word)
+		self.wordEntry.grid(column=3,row=y)
+
+		self.checkWordButton = Tkinter.Button(self,text="Check",command=self.checkWord)
+		self.checkWordButton.grid(column = 4, row=y)
+
+		self.wordTrueLabel = Tkinter.Label(self)
+		self.wordTrueLabel.grid(column=5,row=y)
 
 
 
@@ -356,6 +369,16 @@ class mainApp(Tkinter.Tk):
 		#resizingallowed(x,y)
 		#self.resizable(True,False)
 
+	def checkWord(self):
+
+		if(not len(self.word.get())):
+			self.wordTrueLabel.config(text="INVALID")
+		if (self.d.check(self.word.get())):
+			self.wordTrueLabel.config(text="TRUE")
+		else:
+			self.wordTrueLabel.config(text="FALSE")
+
+
 	def onButtonClick(self):
 		self.mainCode()
 
@@ -364,7 +387,8 @@ class mainApp(Tkinter.Tk):
 		self.uploadedFile.config(text=self.filePath)
 
 	def uploadTranslatedFile(self):
-		self.filePath = askopenfilename()
+		self.inputJSON = askopenfilename()
+		self.translatedFileLabel.config(text=str(self.inputJSON))
 
 	def evaluateMan(self):
 
@@ -444,10 +468,10 @@ class mainApp(Tkinter.Tk):
 			avgOrigTER += terOriginal
 			avgNormTER += terNormalized
 
-		avgOrigBleu = avgOrigBleu/size
-		avgNormBleu = avgNormBleu/size
-		avgOrigTER = avgOrigTER/size
-		avgNormTER = avgNormTER/size
+		avgOrigBleu = self.zeroMeanChecker(avgOrigBleu,size)
+		avgNormBleu = self.zeroMeanChecker(avgNormBleu,size)
+		avgOrigTER = self.zeroMeanChecker(avgOrigTER,size)
+		avgNormTER = self.zeroMeanChecker(avgNormTER,size)
 
 		self.terLabelOrigAuto.config(text="TER: "+str(avgOrigTER))
 		self.bleuLabelOrigAuto.config(text="BLEU: "+str(avgOrigBleu))
@@ -457,6 +481,12 @@ class mainApp(Tkinter.Tk):
 
 
 		#print jsonData
+
+	def zeroMeanChecker(self,total,size):
+		if(total == 0):
+			return 0
+		else:
+			return total/size
 
 	def normalize(self):
 		regexFinder = reg.RegexFinder()
