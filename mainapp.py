@@ -358,6 +358,9 @@ class mainApp(Tkinter.Tk):
 		self.wordTrueLabel = Tkinter.Label(self)
 		self.wordTrueLabel.grid(column=5,row=y)
 
+		self.suggestionLabel = Tkinter.Label(self)
+		self.suggestionLabel.grid(column=2,row=y)
+
 
 
 		#Configure grid and display
@@ -377,6 +380,8 @@ class mainApp(Tkinter.Tk):
 			self.wordTrueLabel.config(text="TRUE")
 		else:
 			self.wordTrueLabel.config(text="FALSE")
+			if(len(self.d.suggest(self.word.get()))>0):
+				self.suggestionLabel.config(text=self.d.suggest(self.word.get())[0])
 
 
 	def onButtonClick(self):

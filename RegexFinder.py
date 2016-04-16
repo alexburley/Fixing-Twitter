@@ -136,8 +136,6 @@ class RegexFinder:
 				
 		return map(slangReplace,tokens)
 
-
-
 	def subAbbreviations(self,tokens):
 
 		def abbrevReplace(m):
@@ -239,7 +237,7 @@ class RegexFinder:
 
 		"""MERGE INTO ONE RE"""
 		#[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
-		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+		url_tag = re.compile('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?')
 		num_urltags1 = len(re.findall(url_tag,line))
 
 		def normalizeURLTag(m):
@@ -279,7 +277,7 @@ class RegexFinder:
 		does not look at I.AM.A.BEAST (recursive gathering of words?)
 	"""
 	def subJoinedWordTags(self,line):
-		jw_tag = re.compile('(\w+)\.(\w+)')
+		jw_tag = re.compile('(\w+)(\.|\-)(\w+)')
 		self.cur_jwtags = len(re.findall(jw_tag,line))
 		self.num_jwtags += self.cur_jwtags
 		joinedwords=re.findall(jw_tag,line)
@@ -294,7 +292,16 @@ class RegexFinder:
 			self.total_subs += 1
 
 			w1 = m.group(1)
-			w2 = m.group(2)
+			w2 = m.group(3)
+
+			if(m.group(2) == "."):
+				if(w1=="e" and w2=="g"):
+					return "0eg0"
+
+			if(m.group(2) == "-"):
+				if(w1="no" and w2="one"):
+					return "no one"
+				return m.group()
 
 			if (w1.isdigit()):
 				self.total_subs = self.total_subs - 1
