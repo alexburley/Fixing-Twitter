@@ -148,7 +148,14 @@ class RegexFinder:
 	"""Use regex for dont and arent to turn into do not and are"""
 	def subSpelling(self,tokens):
 
+
+
 		def spellReplace(m):
+
+			if (" " in m):
+				print m
+				return m
+
 			self.total_subs += 1
 			if(len(m) > 0):
 				if (not self.d.check(m)):
@@ -237,7 +244,9 @@ class RegexFinder:
 
 		"""MERGE INTO ONE RE"""
 		#[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
-		url_tag = re.compile('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?')
+		#option 2 '(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?'
+		#option 3 [a-z]+[:.].*?(?=\s)
+		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 		num_urltags1 = len(re.findall(url_tag,line))
 
 		def normalizeURLTag(m):
@@ -299,7 +308,7 @@ class RegexFinder:
 					return "0eg0"
 
 			if(m.group(2) == "-"):
-				if(w1="no" and w2="one"):
+				if(w1=="no" and w2=="one"):
 					return "no one"
 				return m.group()
 
