@@ -19,6 +19,8 @@ import os.path
 #PRINTING OUT ALL UP TO BASE
 def output(base,max,infile_path):
 
+
+	step = 100
 	infile = open(str(infile_path),'r')
 	outfile_path = os.path.join('/originaltweets/',str(infile_path)+"extracted"+str(base)+"--"+str(max)+".txt")
 	outfile = open(outfile_path, 'w')
@@ -26,9 +28,11 @@ def output(base,max,infile_path):
 
 	for line in infile:
 		if(lineCount >= base):
-			print >>outfile, line
+			if (lineCount%100 == 0):
+				print >>outfile, line
 			if (lineCount == max):
 				break
+
 		lineCount += 1
 
 #printOut(int(start),int(end))

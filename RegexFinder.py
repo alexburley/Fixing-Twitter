@@ -25,6 +25,10 @@ class RegexFinder:
 		self.num_rttags = 0
 		self.total_subs = 0
 		self.total_chars = 0
+		self.num_sc = 0
+		self.num_slang = 0
+		self.num_uni = 0
+		self.num_and = 0
 		self.slang_dict = {}
 		self.corpus_loaded = 0
 		self.outfile = "output.txt"
@@ -150,6 +154,7 @@ class RegexFinder:
 
 		def slangReplace(m):
 			if(m in self.slang_dict):
+				self.num_slang += 1
 				return self.slang_dict[m]
 			else:
 				return m
@@ -165,12 +170,13 @@ class RegexFinder:
 				#print m
 				return m
 
-			self.total_subs += 1
+			#self.total_subs += 1
 			if(len(m) > 0):
 				if (not self.d.check(m)):
 					#print m
 					if (len(self.d.suggest(m))>0):
 						#print self.d.suggest(m)
+						self.num_sc += 1
 						return self.d.suggest(m)[0]
 					else:
 						#print 
@@ -184,25 +190,13 @@ class RegexFinder:
 
 	def subAnd(self,line):
 		a_tag = re.compile('(^|\s+)&(\s+|$)')
-		line = a_tag.sub("and",line)
-		a_tag = re.compile('&amp')
-		line = a_tag.sub("and",line)
+		self.num_and += len(re.findall(a_tag,line))
+		line = a_tag.sub(" and ",line)
+		a_tag = re.compile('&amp;')
+		self.num_and += len(re.findall(a_tag,line))
+		line = a_tag.sub(" and ",line)
 		return line
 		
-	""" WHAT ABOUT punctuation hashtags like #l'pool
-
-		We want to check if the hashtag is part of the sentence of the tweet. If not we can remove it
-		if it is at the end of the tweet. Or we can insert a placeholder. Use a list with a tuple of a (t)
-
-		Approach: for each match we perform operations to determine whether the hashtag is part of the sentence:
-
-		e.g "I hope #LFC #win today" : "I hope 0h_tag0 win today".
-		e.g "I hope we win today #LFC #Winners" : "I hope we win today"
-
-		WHAT ABOUT #soso dis.connected CONFLICT between hashtags and joined words
-
-
-	"""
 	def subHashtags(self,line):
 		h_tag = re.compile('(#)+(\w+)')
 		self.cur_htags = len(re.findall(h_tag,line))
@@ -287,16 +281,6 @@ class RegexFinder:
 		self.num_urltags += self.cur_urltags
 		return line
 
-
-
-	"""IS THIS NECESSARY?"""
-	def subTimeTags(self,line):
-		time_tag = re.compile('[0-9]\.[0-9]')
-		self.cur_timetags = len(re.findall(time_tag,line))
-		self.num_timetags += self.cur_timetags
-		line = time_tag.sub('0time_tag0',line)
-		return line
-
 	"""
 		what about elipses?
 		does not look at I.AM.A.BEAST (recursive gathering of words?)
@@ -377,9 +361,10 @@ class RegexFinder:
 		return line
 
 	def subUniCode(self,line):
-		unicode_tag = re.compile('\\u[a-zA-Z0-9]{4,5}')
+		unicode_tag = re.compile('\\\u[a-zA-Z0-9]{4,5}')
 
 		def normalizeUniCode(m):
+			self.num_uni += 1
 			self.total_subs += 1
 			return ''
 		line = unicode_tag.sub(normalizeUniCode,line)
@@ -431,8 +416,11 @@ class RegexFinder:
 					print "-------------------------------------------------------------"
 
 		#print jsonDict
+
+
 		print >> output, json.dumps({'data': jsonDict}, indent=4, separators=(',', ': '))
 		output.close()
+
 
 	def returnNormTweet(self,tweet,options):
 		self.options = options
