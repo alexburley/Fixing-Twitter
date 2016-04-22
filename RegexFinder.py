@@ -419,6 +419,16 @@ class RegexFinder:
 
 
 		print >> output, json.dumps({'data': jsonDict}, indent=4, separators=(',', ': '))
+		print "num_atags : "+str(self.num_atags)+" pc: + "+str(float(self.num_atags)/self.total_subs)
+		print "num_htags : "+str(self.num_htags)+" pc: + "+str(float(self.num_htags)/self.total_subs)
+		print "num_urltags : "+str(self.num_urltags)+" pc: + "+str(float(self.num_urltags)/self.total_subs)
+		print "num_jwtags : "+str(self.num_jwtags)+" pc: + "+str(float(self.num_jwtags)/self.total_subs)
+		print "num_excesstags : "+str(self.num_excesstags)+" pc: + "+str(float(self.num_excesstags)/self.total_subs)
+		print "num_rttags : "+str(self.num_rttags)+" pc: + "+str(float(self.num_rttags)/self.total_subs)
+		print "num_sc : "+str(self.num_sc)+" pc: + "+str(float(self.num_sc)/self.total_subs)
+		print "num_slang : "+str(self.num_slang)+" pc: + "+str(float(self.num_slang)/self.total_subs)
+		#print "num_uni : "+str(self.num_uni)+" pc: + "+str(float(self.total_subs)/self.num_uni)
+		#print "num_and : "+str(self.num_and)+" pc: + "+str(float(self.total_subs)/self.num_and)
 		output.close()
 
 
