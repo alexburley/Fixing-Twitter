@@ -48,6 +48,7 @@ class RegexFinder:
 		self.slang_dict["n"] = "and"
 		self.slang_dict["ur"] = "your"
 		self.slang_dict["every1"] = "everyone"
+		self.slang_dict["omg"] = "oh my god"
 
 	def hasTags(self, options):
 
@@ -104,7 +105,7 @@ class RegexFinder:
 			line = self.subExcessLetterTags(line)
 
 		#print line
-		#line = self.subUniCode(line)
+		line = self.subUniCode(line)
 		#print line
 		line = self.subRetweet(line)
 		#print line
@@ -161,18 +162,18 @@ class RegexFinder:
 		def spellReplace(m):
 
 			if (" " in m):
-				print m
+				#print m
 				return m
 
 			self.total_subs += 1
 			if(len(m) > 0):
 				if (not self.d.check(m)):
-					print m
+					#print m
 					if (len(self.d.suggest(m))>0):
 						#print self.d.suggest(m)
 						return self.d.suggest(m)[0]
 					else:
-						print 
+						#print 
 						return m
 				else:
 					return m
@@ -182,7 +183,9 @@ class RegexFinder:
 		return map(spellReplace,tokens)
 
 	def subAnd(self,line):
-		a_tag = re.compile('(^|\s+)qwe45rty(\s+|$)')
+		a_tag = re.compile('(^|\s+)&(\s+|$)')
+		line = a_tag.sub("and",line)
+		a_tag = re.compile('&amp')
 		line = a_tag.sub("and",line)
 		return line
 		
@@ -206,7 +209,7 @@ class RegexFinder:
 		self.num_htags += self.cur_htags
 
 		def normalizeHashtags(m):
-			print m.group()
+			#print m.group()
 			self.total_subs += 1
 			htag = m.group(2)
 			end = m.end()
@@ -224,7 +227,7 @@ class RegexFinder:
 						return '0h_tag0'
 				#ELSE if it is another hashtag
 				else:
-					print "returned group (h_tag)"
+					#print "returned group (h_tag)"
 					return m.group()
 			#ELSE if is is the last word it is likely not part of the tweets meaning
 			else:
@@ -258,6 +261,7 @@ class RegexFinder:
 		#option 2 '(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?'
 		#option 3 [a-z]+[:.].*?(?=\s)
 		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+
 		num_urltags1 = len(re.findall(url_tag,line))
 
 		def normalizeURLTag(m):
@@ -373,7 +377,7 @@ class RegexFinder:
 		return line
 
 	def subUniCode(self,line):
-		unicode_tag = re.compile('[^\u0000-\u007F]+')
+		unicode_tag = re.compile('\\u[a-zA-Z0-9]{4,5}')
 
 		def normalizeUniCode(m):
 			self.total_subs += 1
