@@ -24,6 +24,6 @@ def bleu(source, target):
 	#source = source.split(" ")
 	#target = target.split(" ")
 	weights = [0.25]
-	return nltk.bleu(source,target,weights)
+	return nltk.bleu(source,[target],weights)
 
 

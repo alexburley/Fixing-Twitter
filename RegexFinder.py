@@ -155,6 +155,7 @@ class RegexFinder:
 		def slangReplace(m):
 			if(m in self.slang_dict):
 				self.num_slang += 1
+				self.total_subs += 1
 				return self.slang_dict[m]
 			else:
 				return m
@@ -177,6 +178,7 @@ class RegexFinder:
 					if (len(self.d.suggest(m))>0):
 						#print self.d.suggest(m)
 						self.num_sc += 1
+						self.total_subs += 1
 						return self.d.suggest(m)[0]
 					else:
 						#print 
@@ -210,7 +212,8 @@ class RegexFinder:
 			#IF the hashtag is not the last word in the tweet
 			if (end+2<len(line)):
 				#if the word after the hashtag is not another hashtag
-				if(line[end+2] != '#' ): #potentially check if it is a word aswell?
+				if(line[end+1] != '#' ): #potentially check if it is a word aswell?
+					#print line[end+1]
 					#If the word is in the dictionary
 					if(self.d.check(htag)):
 						return htag
@@ -221,8 +224,8 @@ class RegexFinder:
 						return '0h_tag0'
 				#ELSE if it is another hashtag
 				else:
-					#print "returned group (h_tag)"
-					return m.group()
+					self.htagArray.append(m.group())
+					return '0h_tag0'
 			#ELSE if is is the last word it is likely not part of the tweets meaning
 			else:
 				self.htagArray.append(m.group())
@@ -427,6 +430,7 @@ class RegexFinder:
 		print "num_rttags : "+str(self.num_rttags)+" pc: + "+str(float(self.num_rttags)/self.total_subs)
 		print "num_sc : "+str(self.num_sc)+" pc: + "+str(float(self.num_sc)/self.total_subs)
 		print "num_slang : "+str(self.num_slang)+" pc: + "+str(float(self.num_slang)/self.total_subs)
+		print self.total_subs
 		#print "num_uni : "+str(self.num_uni)+" pc: + "+str(float(self.total_subs)/self.num_uni)
 		#print "num_and : "+str(self.num_and)+" pc: + "+str(float(self.total_subs)/self.num_and)
 		output.close()
