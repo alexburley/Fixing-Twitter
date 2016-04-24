@@ -421,7 +421,7 @@ class RegexFinder:
 						if(printouts):
 							print line
 						new_line = self.returnLine(tokens)
-						jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
+						jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
 						if(printouts):
 							print new_line
 							print "-------------------------------------------------------------"
