@@ -401,10 +401,12 @@ class RegexFinder:
 	def outputLines(self,infile,options):
 
 		self.options = options
+		printouts = options['printouts']
 		jsonDict = {}
 		counter = 0
 
-		print "-------------------------------------------------------------"
+		if(printouts):
+			print "-------------------------------------------------------------"
 		output = open(self.outfile,'w+')
 		for line in infile:
 			self.currentline = unicode(line)
@@ -412,11 +414,13 @@ class RegexFinder:
 				tokens = self.subLine(line)
 				if (self.hasTags(options)):
 					counter += 1
-					print line
+					if(printouts):
+						print line
 					new_line = self.returnLine(tokens)
 					jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
-					print new_line
-					print "-------------------------------------------------------------"
+					if(printouts):
+						print new_line
+						print "-------------------------------------------------------------"
 
 		#print jsonDict
 

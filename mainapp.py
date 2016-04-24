@@ -75,6 +75,11 @@ class mainApp(Tkinter.Tk):
 		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets)
 		self.extractButton.grid(column=6,row=y)
 
+		self.printCheck = Tkinter.IntVar()
+		self.printCheck.set(1)
+		self.printCheckbox =Tkinter.Checkbutton(self,text="Printouts?",variable=self.printCheck)
+		self.printCheckbox.grid(column=7,row=y)
+
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
 
@@ -566,6 +571,7 @@ class mainApp(Tkinter.Tk):
 		options['normSpellcheck'] = self.spellcheckN.get()
 		options['normJWTag'] = self.joinedWordsN.get()
 		options['normExcessTag'] = self.excessTagN.get()
+		options['printouts'] = self.printCheck.get()
 		return options
 
 
@@ -576,7 +582,7 @@ class mainApp(Tkinter.Tk):
 		if (not (regexFinder.corpus_loaded) and (self.load_corpus_flag.get())):
 			self.loadCorpus(regexFinder)
 		options = self.returnOptions()
-		print "\n \n \nFinding and substituting regular expressions on filepath \n \n \n"
+		print "Start Normalization"
 		regexFinder.outputLines(infile,options)
 
 		self.num_htags.config(text="HTags: "+str(regexFinder.num_htags))
