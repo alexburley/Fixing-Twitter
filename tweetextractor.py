@@ -35,4 +35,8 @@ def output(base,max,infile_path):
 
 		lineCount += 1
 
+	print "-------------------------------------------"
+	print "Extracted"
+	print "-------------------------------------------"
+
 #printOut(int(start),int(end))

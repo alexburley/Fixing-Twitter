@@ -7,6 +7,7 @@ import codecs
 infile = codecs.open(sys.argv[1],'r',encoding="utf-8")
 outfile = codecs.open(sys.argv[2],'w+',encoding="utf-8")
 language = sys.argv[3]
+devSet = sys.argv[4]
 jsonData = {}
 
 def translatorFunc():
@@ -34,12 +35,10 @@ def translatorFunc():
 		print "-----------------------------------------------"
 		print str(counter)+" of "+str(size)
 		counter += 1
-
-		"""
-		if (id_['transPerf'] == " "):
-			if(id_['perf'] is not " "):
-				id_['transPerf'] = translator.translate(perf)
-		"""
+		
+		if (devSet == "y"):
+			id_['transPerf'] = translator.translate(perf,language)
+		
 
 	print >> outfile, json.dumps({'data': jsonData},ensure_ascii=False, indent=4, separators=(',', ': '))
 	outfile.close

@@ -480,8 +480,10 @@ class mainApp(Tkinter.Tk):
 
 			avgOrigBleu += bleuOriginal
 			avgNormBleu += bleuNormalized
-			avgOrigTER += terOriginal
-			avgNormTER += terNormalized
+			print avgOrigTER
+			print terOriginal
+			avgOrigTER += float(terOriginal)
+			avgNormTER += float(terNormalized)
 
 		avgOrigBleu = self.zeroMeanChecker(avgOrigBleu,size)
 		avgNormBleu = self.zeroMeanChecker(avgNormBleu,size)
