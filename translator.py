@@ -17,14 +17,15 @@ def translatorFunc():
 	jsonData = json.loads(jsonStr)['data']
 	
 
-	counter = 0
+	counter = 1
 	size = len(jsonData)
 
 	for key in jsonData:
 		id_ = jsonData[key]
 		orig = id_['orig']
 		norm = id_['norm']
-		perf = id_['perf']
+		if(devSet == "y"):
+			perf = id_['perf']
 
 		transOrig = translator.translate(orig,language)
 		transNorm = translator.translate(norm,language)
@@ -42,6 +43,7 @@ def translatorFunc():
 
 	print >> outfile, json.dumps({'data': jsonData},ensure_ascii=False, indent=4, separators=(',', ': '))
 	outfile.close
+	print "translation done"
 
 
 translatorFunc()
