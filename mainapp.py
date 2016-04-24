@@ -76,9 +76,14 @@ class mainApp(Tkinter.Tk):
 		self.extractButton.grid(column=6,row=y)
 
 		self.printCheck = Tkinter.IntVar()
-		self.printCheck.set(1)
+		self.printCheck.set(0)
 		self.printCheckbox =Tkinter.Checkbutton(self,text="Printouts?",variable=self.printCheck)
 		self.printCheckbox.grid(column=7,row=y)
+
+		self.jsonCheck = Tkinter.IntVar()
+		self.jsonCheck.set(1)
+		self.jsonCheckbox = Tkinter.Checkbutton(self,text="JSON?",variable=self.jsonCheck)
+		self.jsonCheckbox.grid(column=8,row=y)
 
 		#self.cwd = Tkinter.Label(self,text=os.getcwd())
 		#self.cwd.grid(column=3,row=0)
@@ -572,18 +577,21 @@ class mainApp(Tkinter.Tk):
 		options['normJWTag'] = self.joinedWordsN.get()
 		options['normExcessTag'] = self.excessTagN.get()
 		options['printouts'] = self.printCheck.get()
+		options['fileIsJson'] = self.jsonCheck.get()
 		return options
 
 
 	def mainCode(self):
 
-		infile = open(self.filePath,'r')
+
+
+		#infile = open(self.filePath,'r')
 		regexFinder = reg.RegexFinder()
 		if (not (regexFinder.corpus_loaded) and (self.load_corpus_flag.get())):
 			self.loadCorpus(regexFinder)
 		options = self.returnOptions()
 		print "Start Normalization"
-		regexFinder.outputLines(infile,options)
+		regexFinder.outputLines(self.filePath,options)
 
 		self.num_htags.config(text="HTags: "+str(regexFinder.num_htags))
 		self.num_jwtags.config(text="JWTags: "+str(regexFinder.num_jwtags))

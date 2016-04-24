@@ -5,6 +5,7 @@ import spellchecker as sc
 import enchant
 from string import punctuation
 import json
+import codecs
 
 """
 
@@ -398,34 +399,66 @@ class RegexFinder:
 
 		return new_line
 
-	def outputLines(self,infile,options):
+	def outputLines(self,filepath,options):
 
 		self.options = options
 		printouts = options['printouts']
 		jsonDict = {}
+		jsonData = {}
 		counter = 0
 
-		if(printouts):
-			print "-------------------------------------------------------------"
-		output = open(self.outfile,'w+')
-		for line in infile:
-			self.currentline = unicode(line)
-			if line.strip():
-				tokens = self.subLine(line)
-				if (self.hasTags(options)):
-					counter += 1
-					if(printouts):
-						print line
-					new_line = self.returnLine(tokens)
-					jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
-					if(printouts):
-						print new_line
-						print "-------------------------------------------------------------"
+		if (not options['fileIsJson']):
+			infile = open(filepath,'r')
+			if(printouts):
+				print "-------------------------------------------------------------"
+			output = open(self.outfile,'w+')
+			for line in infile:
+				self.currentline = unicode(line)
+				if line.strip():
+					tokens = self.subLine(line)
+					if (self.hasTags(options)):
+						counter += 1
+						if(printouts):
+							print line
+						new_line = self.returnLine(tokens)
+						jsonDict[counter] = {'orig':line.strip(), 'norm':new_line, 'perf:':" ", 'transOrig':" ", 'transNorm':" ", 'transPerf':" "};
+						if(printouts):
+							print new_line
+							print "-------------------------------------------------------------"
 
-		#print jsonDict
+			#print jsonDict
+			print >> output, json.dumps({'data': jsonDict}, indent=4, separators=(',', ': '),ensure_ascii=False)
+			output.close()
+
+		if (options['fileIsJson']):
+			infile = codecs.open(filepath,'r',encoding="utf-8")
+			if(printouts):
+				print "-------------------------------------------------------------"
+			output = codecs.open(self.outfile,'w+',encoding="utf-8")
+			jsonStr = infile.read()
+			jsonData = json.loads(jsonStr)['data']
+
+			#print jsonData
+
+			for key in jsonData:
+				id_ = jsonData[key]
+				#print id_
+				line = id_['orig']
+				if line.strip():
+					tokens = self.subLine(line)
+					if (self.hasTags(options)):
+						if(printouts):
+							print line
+						new_line = self.returnLine(tokens)
+						id_['norm'] = new_line
+						if(printouts):
+							print new_line
+							print "-------------------------------------------------------------"
+			print >> output, json.dumps({'data': jsonData},ensure_ascii=False, indent=4, separators=(',', ': '))
+			output.close()
 
 
-		print >> output, json.dumps({'data': jsonDict}, indent=4, separators=(',', ': '))
+
 		print "num_atags : "+str(self.num_atags)+" pc: + "+str(float(self.num_atags)/self.total_subs)
 		print "num_htags : "+str(self.num_htags)+" pc: + "+str(float(self.num_htags)/self.total_subs)
 		print "num_urltags : "+str(self.num_urltags)+" pc: + "+str(float(self.num_urltags)/self.total_subs)
@@ -437,7 +470,7 @@ class RegexFinder:
 		print self.total_subs
 		#print "num_uni : "+str(self.num_uni)+" pc: + "+str(float(self.total_subs)/self.num_uni)
 		#print "num_and : "+str(self.num_and)+" pc: + "+str(float(self.total_subs)/self.num_and)
-		output.close()
+		
 
 
 	def returnNormTweet(self,tweet,options):
