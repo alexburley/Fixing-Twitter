@@ -11,6 +11,7 @@ import enchant
 import Tkinter
 import os
 import json
+import codecs
 from tkFileDialog import askopenfilename
 
 """
@@ -448,6 +449,7 @@ class mainApp(Tkinter.Tk):
 		avgOrigTER = 0
 		avgNormTER = 0
 
+		#jsonData['totals'] = {}
 
 		for key in jsonData:
 
@@ -458,6 +460,10 @@ class mainApp(Tkinter.Tk):
 			terOriginal = tc.ter(original, perfect)
 			terNormalized = tc.ter(normalized,perfect)
 			terPerf = tc.ter(perfect,perfect)
+
+			jsonData[key]['terOrig'] = terOriginal
+			jsonData[key]['terNormalized'] = terNormalized
+			jsonData[key]['terPerf'] = terPerf
 
 			"""
 			print "Translated Original = "+original+" -TER- "+str(terOriginal)
@@ -471,6 +477,10 @@ class mainApp(Tkinter.Tk):
 			bleuNormalized = tc.bleu(normalized,perfect)
 			bleuPerfect = tc.bleu(perfect,perfect)
 
+			jsonData[key]['bleuOriginal'] = bleuOriginal
+			jsonData[key]['bleuNormalized'] = bleuNormalized
+			jsonData[key]['bleuPerfect'] = bleuPerfect
+
 
 			"""
 			print "Translated Original = "+original+" -BLEU- "+str(bleuOriginal)
@@ -478,10 +488,12 @@ class mainApp(Tkinter.Tk):
 			print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
 			"""
 
+
+
 			avgOrigBleu += bleuOriginal
 			avgNormBleu += bleuNormalized
-			print avgOrigTER
-			print terOriginal
+			#print avgOrigTER
+			#print terOriginal
 			avgOrigTER += float(terOriginal)
 			avgNormTER += float(terNormalized)
 
@@ -489,6 +501,16 @@ class mainApp(Tkinter.Tk):
 		avgNormBleu = self.zeroMeanChecker(avgNormBleu,size)
 		avgOrigTER = self.zeroMeanChecker(avgOrigTER,size)
 		avgNormTER = self.zeroMeanChecker(avgNormTER,size)
+
+		#jsonData['totals']['origBleu'] = avgOrigBleu
+		#jsonData['totals']['normBleu'] = avgNormBleu
+		#jsonData['totals']['origTer'] = avgOrigTER
+		#jsonData['totals']['normTer'] = avgNormTER 
+
+		output = codecs.open("results.txt",'w+',encoding="utf-8")
+		print >> output, json.dumps({'data': jsonData},ensure_ascii=False, indent=4, separators=(',', ': '))
+		output.close
+		print "printed results"
 
 		self.terLabelOrigAuto.config(text="TER: "+str(avgOrigTER))
 		self.bleuLabelOrigAuto.config(text="BLEU: "+str(avgOrigBleu))
