@@ -192,7 +192,7 @@ class RegexFinder:
 		return map(spellReplace,tokens)
 
 	def subAnd(self,line):
-		a_tag = re.compile('(^|\s+)&(\s+|$)')
+		a_tag = re.compile(r'(^|\s+)&(\s+|$)')
 		self.num_and += len(re.findall(a_tag,line))
 		line = a_tag.sub(" and ",line)
 		a_tag = re.compile('&amp;')
@@ -201,7 +201,7 @@ class RegexFinder:
 		return line
 		
 	def subHashtags(self,line):
-		h_tag = re.compile('(#)+(\w+)')
+		h_tag = re.compile(r'(#)+(\w+)')
 		self.cur_htags = len(re.findall(h_tag,line))
 		self.num_htags += self.cur_htags
 
