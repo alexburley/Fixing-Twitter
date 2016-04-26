@@ -200,6 +200,7 @@ class RegexFinder:
 		self.total_subs += len(re.findall(a_tag,line))
 		line = a_tag.sub(" and ",line)
 		return line
+
 		
 	def subHashtags(self,line):
 		h_tag = re.compile(r'(#)+(\w+)')
@@ -237,8 +238,10 @@ class RegexFinder:
 
 		return line
 
+
+
 	def subAccountTags(self,line):
-		a_tag = re.compile('@+\w+\S*')
+		a_tag = re.compile(r'@+\w+\S*')
 		self.cur_atags = len(re.findall(a_tag,line))
 		self.num_atags += self.cur_atags
 
@@ -286,12 +289,11 @@ class RegexFinder:
 		self.num_urltags += self.cur_urltags
 		return line
 
-	"""
-		what about elipses?
-		does not look at I.AM.A.BEAST (recursive gathering of words?)
-	"""
+
+
+
 	def subJoinedWordTags(self,line):
-		jw_tag = re.compile('(\w+)(\.|\-)(\w+)')
+		jw_tag = re.compile(r'(\w+)(\.|\-)(\w+)')
 		self.cur_jwtags = len(re.findall(jw_tag,line))
 		self.num_jwtags += self.cur_jwtags
 		joinedwords=re.findall(jw_tag,line)
@@ -365,8 +367,9 @@ class RegexFinder:
 		line = excess_tag.sub(normalizeExcessLetterTags,line)
 		return line
 
+
 	def subUniCode(self,line):
-		unicode_tag = re.compile('\\\u[a-zA-Z0-9]{4,5}')
+		unicode_tag = re.compile(r'\\\u[a-zA-Z0-9]{4,5}')
 
 		def normalizeUniCode(m):
 			self.num_other += 1
@@ -377,7 +380,7 @@ class RegexFinder:
 
 	def subRetweet(self,line):
 
-		rt_tag = re.compile('\\brt\\b')
+		rt_tag = re.compile(r'\\brt\\b')
 
 		def normalizeRT(m):
 			#print "SUB RT"
@@ -460,6 +463,7 @@ class RegexFinder:
 
 
 
+			
 		print "num_atags : "+str(self.num_atags)+" pc: + "+str(float(self.num_atags)/self.total_subs)
 		print "num_htags : "+str(self.num_htags)+" pc: + "+str(float(self.num_htags)/self.total_subs)
 		print "num_urltags : "+str(self.num_urltags)+" pc: + "+str(float(self.num_urltags)/self.total_subs)
