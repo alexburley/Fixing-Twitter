@@ -20,7 +20,7 @@ import os.path
 def output(base,max,infile_path):
 
 
-	step = 100
+	step = 1000000
 	infile = open(str(infile_path),'r')
 	outfile_path = os.path.join('/originaltweets/',str(infile_path)+"extracted"+str(base)+"--"+str(max)+".txt")
 	outfile = open(outfile_path, 'w')

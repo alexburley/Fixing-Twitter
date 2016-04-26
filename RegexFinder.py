@@ -28,8 +28,7 @@ class RegexFinder:
 		self.total_chars = 0
 		self.num_sc = 0
 		self.num_slang = 0
-		self.num_uni = 0
-		self.num_and = 0
+		self.num_other = 0
 		self.slang_dict = {}
 		self.corpus_loaded = 0
 		self.outfile = "output.txt"
@@ -193,10 +192,12 @@ class RegexFinder:
 
 	def subAnd(self,line):
 		a_tag = re.compile(r'(^|\s+)&(\s+|$)')
-		self.num_and += len(re.findall(a_tag,line))
+		self.num_other += len(re.findall(a_tag,line))
+		self.total_subs += len(re.findall(a_tag,line))
 		line = a_tag.sub(" and ",line)
 		a_tag = re.compile('&amp;')
-		self.num_and += len(re.findall(a_tag,line))
+		self.num_other += len(re.findall(a_tag,line))
+		self.total_subs += len(re.findall(a_tag,line))
 		line = a_tag.sub(" and ",line)
 		return line
 		
@@ -368,7 +369,7 @@ class RegexFinder:
 		unicode_tag = re.compile('\\\u[a-zA-Z0-9]{4,5}')
 
 		def normalizeUniCode(m):
-			self.num_uni += 1
+			self.num_other += 1
 			self.total_subs += 1
 			return ''
 		line = unicode_tag.sub(normalizeUniCode,line)
@@ -380,7 +381,7 @@ class RegexFinder:
 
 		def normalizeRT(m):
 			#print "SUB RT"
-			self.num_rttags += 1
+			self.num_other += 1
 			self.total_subs += 1
 			return ''
 
@@ -464,7 +465,7 @@ class RegexFinder:
 		print "num_urltags : "+str(self.num_urltags)+" pc: + "+str(float(self.num_urltags)/self.total_subs)
 		print "num_jwtags : "+str(self.num_jwtags)+" pc: + "+str(float(self.num_jwtags)/self.total_subs)
 		print "num_excesstags : "+str(self.num_excesstags)+" pc: + "+str(float(self.num_excesstags)/self.total_subs)
-		print "num_rttags : "+str(self.num_rttags)+" pc: + "+str(float(self.num_rttags)/self.total_subs)
+		print "num_other : "+str(self.num_other)+" pc: + "+str(float(self.num_other)/self.total_subs)
 		print "num_sc : "+str(self.num_sc)+" pc: + "+str(float(self.num_sc)/self.total_subs)
 		print "num_slang : "+str(self.num_slang)+" pc: + "+str(float(self.num_slang)/self.total_subs)
 		print self.total_subs
