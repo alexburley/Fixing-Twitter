@@ -108,24 +108,26 @@ class RegexFinder:
 			#print line
 			line = self.subExcessLetterTags(line)
 
-		#print line
-		line = self.subUniCode(line)
-		#print line
-		line = self.subRetweet(line)
-		#print line
-		line = self.subAnd(line)
-		#print line
+		if htags:
+			#print line
+			line = self.subUniCode(line)
+			#print line
+			line = self.subRetweet(line)
+			#print line
+			line = self.subAnd(line)
+			#print line
 		
 		self.total_chars += len(line)
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
-		tokens = self.subSlang(tokens)
+		
 
 		
 
 		if spellcheck:
+			tokens = self.subSlang(tokens)
 			tokens = self.subSpelling(tokens)
 
 		for word in xrange (len(tokens)):
