@@ -4,7 +4,6 @@ import sys
 import re
 import RegexFinder as reg
 import unittest
-import spellchecker as sc
 import TweetComparison as tc
 import TweetExtractor as te
 import enchant

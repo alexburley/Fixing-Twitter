@@ -1,6 +1,5 @@
 import re
 import unittest
-import spellchecker as sc
 #NEED PYTHON 32BIT
 import enchant
 from string import punctuation
@@ -122,9 +121,6 @@ class RegexFinder:
 
 		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
-		
-
-		
 
 		if spellcheck:
 			tokens = self.subSlang(tokens)
@@ -424,6 +420,7 @@ class RegexFinder:
 					tokens = self.subLine(line)
 					if (self.hasTags(options)):
 						counter += 1
+						print counter
 						if(printouts):
 							print line
 						new_line = self.returnLine(tokens)
@@ -448,6 +445,7 @@ class RegexFinder:
 
 			for key in jsonData:
 				id_ = jsonData[key]
+				print key
 				#print id_
 				line = id_['orig']
 				if line.strip():
