@@ -445,7 +445,7 @@ class RegexFinder:
 
 			for key in jsonData:
 				id_ = jsonData[key]
-				print key
+				#print key
 				#print id_
 				line = id_['orig']
 				if line.strip():
