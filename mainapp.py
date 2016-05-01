@@ -287,7 +287,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedOrig = Tkinter.StringVar()
 		self.translatedOrigEntry = Tkinter.Entry(self,textvariable=self.translatedOrig)
 		self.translatedOrigEntry.grid(column=1,row=y)
-		self.translatedOrigEntry.insert(0,"Sommes-nous #winers enfin? #LFC")
+		self.translatedOrigEntry.insert(0,"It is a guide to action which ensures that the military always obeys the commands of the party")
 
 		self.translatedNormalizedLabel = Tkinter.Label(self,text="Translated Normalized")
 		self.translatedNormalizedLabel.grid(column=2,row=y)
@@ -303,7 +303,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedPerf = Tkinter.StringVar()
 		self.translatedPerfEntry = Tkinter.Entry(self,textvariable=self.translatedPerf)
 		self.translatedPerfEntry.grid(column=5,row=y)
-		self.translatedPerfEntry.insert(0,"sommes-nous gagnants enfin")
+		self.translatedPerfEntry.insert(0,"It is a guide to action that ensures the military will forever heed Party commands")
 
 		#row 11
 		y += 1
@@ -413,29 +413,29 @@ class mainApp(Tkinter.Tk):
 
 		terOriginal = tc.ter(original, perfect)
 		terNormalized = tc.ter(normalized,perfect)
-		terPerf = tc.ter(perfect,perfect)
+		#terPerf = tc.ter(perfect,perfect)
 
 		print "Translated Original = "+original+" -TER- "+str(terOriginal)
 		print "Translated Normalized = "+normalized+" -TER- "+str(terNormalized)
-		print "Translated Perfect = "+perfect+" -TER- "+str(terPerf)
+		#print "Translated Perfect = "+perfect+" -TER- "+str(terPerf)
 
 		self.terLabelOriginal.config(text="TER: "+str(terOriginal))
 		self.terLabelNormalised.config(text="TER: "+str(terNormalized))
-		self.terLabelPerf.config(text="TER: "+str(terPerf))
+		#self.terLabelPerf.config(text="TER: "+str(terPerf))
 
 		print "\n"
 
 		bleuOriginal = tc.bleu(original,perfect)
 		bleuNormalized = tc.bleu(normalized,perfect)
-		bleuPerfect = tc.bleu(perfect,perfect)
+		#bleuPerfect = tc.bleu(perfect,perfect)
 
 		print "Translated Original = "+original+" -BLEU- "+str(bleuOriginal)
 		print "Translated Normalized = "+normalized+" -BLEU- "+str(bleuNormalized)
-		print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
+		#print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
 
 		self.bleuLabelOriginal.config(text="BLEU: "+str(bleuOriginal))
 		self.bleuLabelNormalised.config(text="BLEU: "+str(bleuNormalized))
-		self.bleuLabelPerf.config(text="BLEU: "+str(bleuPerfect))
+		#self.bleuLabelPerf.config(text="BLEU: "+str(bleuPerfect))
 
 	def evaluateAuto(self):
 		jsonFile = open(self.inputJSON)

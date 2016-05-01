@@ -1,7 +1,7 @@
 
 import pyter
 import nltk
-
+import nltk.translate.bleu_score as bl
 
 def naiveInput():
 	return 0
@@ -21,9 +21,12 @@ def ter(source,target):
 	
 
 def bleu(source, target):
-	#source = source.split(" ")
-	#target = target.split(" ")
-	weights = [0.25]
-	return nltk.bleu(source,[target],weights)
+	source = source.split(" ")
+	target = target.split(" ")
+	smoothFunc = bl.SmoothingFunction()
+	print source, target
+	return bl.sentence_bleu(target,source,weights=[0.25],smoothing_function=smoothFunc.method5)
 
+def retTrue():
+	return 1
 
