@@ -458,41 +458,21 @@ class mainApp(Tkinter.Tk):
 
 			terOriginal = tc.ter(original, perfect)
 			terNormalized = tc.ter(normalized,perfect)
-			terPerf = tc.ter(perfect,perfect)
 
 			jsonData[key]['terOrig'] = terOriginal
 			jsonData[key]['terNormalized'] = terNormalized
-			jsonData[key]['terPerf'] = terPerf
-
-			"""
-			print "Translated Original = "+original+" -TER- "+str(terOriginal)
-			print "Translated Normalized = "+normalized+" -TER- "+str(terNormalized)
-			print "Translated Perfect = "+perfect+" -TER- "+str(terPerf)
-			"""
-
-			#print "\n"
+			#jsonData[key]['terPerf'] = terPerf
 
 			bleuOriginal = tc.bleu(original,perfect)
 			bleuNormalized = tc.bleu(normalized,perfect)
-			bleuPerfect = tc.bleu(perfect,perfect)
 
 			jsonData[key]['bleuOriginal'] = bleuOriginal
 			jsonData[key]['bleuNormalized'] = bleuNormalized
-			jsonData[key]['bleuPerfect'] = bleuPerfect
-
-
-			"""
-			print "Translated Original = "+original+" -BLEU- "+str(bleuOriginal)
-			print "Translated Normalized = "+normalized+" -BLEU- "+str(bleuNormalized)
-			print "Translated Perfect = "+perfect+" -BLEU- "+str(bleuPerfect)
-			"""
-
-
+			#jsonData[key]['bleuPerfect'] = bleuPerfect
 
 			avgOrigBleu += bleuOriginal
 			avgNormBleu += bleuNormalized
-			#print avgOrigTER
-			#print terOriginal
+
 			avgOrigTER += float(terOriginal)
 			avgNormTER += float(terNormalized)
 
@@ -500,11 +480,6 @@ class mainApp(Tkinter.Tk):
 		avgNormBleu = self.zeroMeanChecker(avgNormBleu,size)
 		avgOrigTER = self.zeroMeanChecker(avgOrigTER,size)
 		avgNormTER = self.zeroMeanChecker(avgNormTER,size)
-
-		#jsonData['totals']['origBleu'] = avgOrigBleu
-		#jsonData['totals']['normBleu'] = avgNormBleu
-		#jsonData['totals']['origTer'] = avgOrigTER
-		#jsonData['totals']['normTer'] = avgNormTER 
 
 		output = codecs.open("results.txt",'w+',encoding="utf-8")
 		print >> output, json.dumps({'data': jsonData},ensure_ascii=False, indent=4, separators=(',', ': '))

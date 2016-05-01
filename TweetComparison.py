@@ -2,6 +2,7 @@
 import pyter
 import nltk
 import nltk.translate.bleu_score as bl
+import codecs
 
 def naiveInput():
 	return 0
@@ -21,11 +22,11 @@ def ter(source,target):
 	
 
 def bleu(source, target):
-	source = source.split(" ")
-	target = target.split(" ")
+	source = source.encode("utf-8").split(" ")
+	target = target.encode("utf-8").split(" ")
 	smoothFunc = bl.SmoothingFunction()
-	print source, target
-	return bl.sentence_bleu(target,source,weights=[0.25],smoothing_function=smoothFunc.method5)
+	#print source, target
+	return bl.sentence_bleu(target,source,weights=[0.25],smoothing_function=smoothFunc.method2)
 
 def retTrue():
 	return 1
