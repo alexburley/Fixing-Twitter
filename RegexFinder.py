@@ -7,8 +7,7 @@ import json
 import codecs
 
 """
-
-Notes: Date lengthening from sep to september is present in google translate
+Main Class
 
 """
 
@@ -30,12 +29,15 @@ class RegexFinder:
 		self.num_other = 0
 		self.slang_dict = {}
 		self.corpus_loaded = 0
+		#where do we output the normalizaed file
 		self.outfile = "output.txt"
 
 		self.currentline = ""
 		self.d = enchant.Dict("en_GB")
 		self.initializeSlang()
 
+
+	#SLang Dictionary implementation
 	def initializeSlang(self):
 
 		self.slang_dict["lol"] = "laugh out loud"
@@ -53,6 +55,8 @@ class RegexFinder:
 		self.slang_dict["every1"] = "everyone"
 		self.slang_dict["omg"] = "oh my god"
 
+
+	#Checking whether the tweet contains the tags we need
 	def hasTags(self, options):
 
 		flag = 1
@@ -79,6 +83,7 @@ class RegexFinder:
 		else:
 			return 0
 
+	#Perform the normalization of the line
 	def tokenizeLine(self,line,htags,atags,jwtags,urltags,excesstags,timetags,spellcheck):
 
 
@@ -118,14 +123,13 @@ class RegexFinder:
 		
 		self.total_chars += len(line)
 		line = ' '.join(filter(None, (word.strip(punctuation) for word in line.split())))
-
-		#line = self.subExcessLetterTags(line)
 		tokens = re.split('\s',line)
 
 		if spellcheck:
 			tokens = self.subSlang(tokens)
 			tokens = self.subSpelling(tokens)
 
+		#sub back in the place holders
 		for word in xrange (len(tokens)):
 			if (tokens[word] == "0h_tag0"):
 				htag = self.htagArray.pop(0)
@@ -139,14 +143,15 @@ class RegexFinder:
 			if (tokens[word] == "0eg0"):
 				tokens[word] = "e.g."
 
-
 		return tokens
 
+	#Perform substitutions based on options
 	def subLine(self,line):	
 		tokens = self.tokenizeLine(line,self.options['normHTag'],self.options['normATag'],
 			self.options['normJWTag'],self.options['normURLTag'],self.options['normExcessTag'],
 				self.options['normTimeTag'],self.options['normSpellcheck'])
 		return tokens
+
 
 	def subSlang(self,tokens):
 
@@ -160,7 +165,6 @@ class RegexFinder:
 				
 		return map(slangReplace,tokens)
 
-	"""Use regex for dont and arent to turn into do not and are"""
 	def subSpelling(self,tokens):
 
 		def spellReplace(m):
@@ -172,7 +176,7 @@ class RegexFinder:
 			#self.total_subs += 1
 			if(len(m) > 0):
 				if (not self.d.check(m)):
-					#print m
+					#If there is a suggestion
 					if (len(self.d.suggest(m))>0):
 						#print self.d.suggest(m)
 						self.num_sc += 1
@@ -199,7 +203,7 @@ class RegexFinder:
 		line = a_tag.sub(" and ",line)
 		return line
 
-		
+	
 	def subHashtags(self,line):
 		h_tag = re.compile(r'(#)+(\w+)')
 		self.cur_htags = len(re.findall(h_tag,line))
@@ -220,7 +224,6 @@ class RegexFinder:
 						return htag
 					#ELIF CHECK IF EXCESSS LETTER
 					else:
-						"""This may be an opportunity to solve the misspelled hashtags problem or joined words"""
 						self.htagArray.append(m.group())
 						return '0h_tag0'
 				#ELSE if it is another hashtag
@@ -256,23 +259,12 @@ class RegexFinder:
 
 	def subURLTags(self,line):
 
-		"""MERGE INTO ONE RE"""
-		#[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
-		#option 2 '(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?'
-		#option 3 [a-z]+[:.].*?(?=\s)
-		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 
+		url_tag = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 		num_urltags1 = len(re.findall(url_tag,line))
 
 		def normalizeURLTag(m):
 			self.total_subs += 1
-			"""
-			end = m.end()
-			if (end == len(line)):
-				return ""
-			else:
-				return ''
-			"""
 			self.urltagArray.append(m.group())
 			return '0url_tag0'
 
@@ -304,10 +296,12 @@ class RegexFinder:
 			w2 = m.group(3)
 
 			if(m.group(2) == "."):
+				sort out abbreviations
 				if(w1=="e" and w2=="g"):
 					return "0eg0"
 
 			if(m.group(2) == "-"):
+				#sort out common joined words
 				if(w1=="no" and w2=="one"):
 					return "no one"
 				return m.group()
@@ -346,11 +340,7 @@ class RegexFinder:
 		return line
 
 
-	"""
-		What about numbers, what about roman numerals.
-		MENTION IN DISS ABOUT TESTING GOOGLE TRANSLATE 
-		MENTION ABOUT CUTTING DOWN TO SINGLE LETTER
-	"""
+
 	def subExcessLetterTags(self,line):
 		excess_tag = re.compile(r'(.)\1{2,}')
 		self.cur_excesstags = len(re.findall(excess_tag,line))

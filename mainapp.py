@@ -21,12 +21,8 @@ Main App constructs the GUI and the controls for which to access the program
 
 class mainApp(Tkinter.Tk):
 
-	#top = Tkinter.Tk()
-	# Code to add widgets will go here...
-	#top.mainloop()
-
-
 	#Initialise the class with the parent being the TKinter initialisation
+	#Also declare ditionaries and default files to operate on
 	def __init__(self,parent):
 		Tkinter.Tk.__init__(self,parent)
 		self.parent = parent
@@ -49,6 +45,7 @@ class mainApp(Tkinter.Tk):
 		self.runCode = Tkinter.Button(self,text=u"Run Code", command = self.onButtonClick)
 		self.runCode.grid(column=0,row=y)
 
+		#Do we want to load the supplementary corpus into dictionary
 		self.load_corpus_flag = Tkinter.IntVar()
 		self.load_corpus_flag.set(1)
 		self.load_corpus_flag_box = Tkinter.Checkbutton(self, text="Load Corpus?",variable = self.load_corpus_flag)
@@ -62,6 +59,7 @@ class mainApp(Tkinter.Tk):
 		self.uploadedFile = Tkinter.Label(self,text="No File Uploaded")
 		self.uploadedFile.grid(column=3,row=y)
 
+		#Values for min and max for extraction
 		self.minValue = Tkinter.StringVar()
 		self.minValue.set("100")
 		self.minEntry = Tkinter.Entry(self,textvariable=self.minValue)
@@ -75,18 +73,18 @@ class mainApp(Tkinter.Tk):
 		self.extractButton = Tkinter.Button(self, text="Extract", command=self.extractTweets)
 		self.extractButton.grid(column=6,row=y)
 
+		#Do we want printouts in the terminal
 		self.printCheck = Tkinter.IntVar()
 		self.printCheck.set(0)
 		self.printCheckbox =Tkinter.Checkbutton(self,text="Printouts?",variable=self.printCheck)
 		self.printCheckbox.grid(column=7,row=y)
 
+		#Is the input file for the normalization a JSON file
 		self.jsonCheck = Tkinter.IntVar()
 		self.jsonCheck.set(1)
 		self.jsonCheckbox = Tkinter.Checkbutton(self,text="JSON?",variable=self.jsonCheck)
 		self.jsonCheckbox.grid(column=8,row=y)
 
-		#self.cwd = Tkinter.Label(self,text=os.getcwd())
-		#self.cwd.grid(column=3,row=0)
 
 		#row 1
 		y += 1
@@ -137,11 +135,7 @@ class mainApp(Tkinter.Tk):
 
 		#y = 3
 
-		#Below we will list all the normalisation methods that we will use
-		#useNormalisationMethods = Tkinter.Label(self,text="Use Normalisation Methods")
-		#useNormalisationMethods.grid(column=0,row=y)
-
-		#row 3
+		#Counters for the number of tokens
 		y += 1
 
 		self.num_htags = Tkinter.Label(self,text="HTags: 0")
@@ -157,13 +151,15 @@ class mainApp(Tkinter.Tk):
 		self.num_URLtags.grid(column=3,row=y)
 
 
-		#row4
+		#y = 4
 		y += 1
 
 		self.normalizationTitle = Tkinter.Label(self,text="Normalization Technique Selection")
 		self.normalizationTitle.grid(column=0,row=y)
 
-		#row5
+		#y = 5 
+
+		#Normalization Technique Selection
 		y += 1
 
 		self.hashTagN = Tkinter.IntVar()
@@ -206,6 +202,8 @@ class mainApp(Tkinter.Tk):
 
 		self.translationLabelAuto = Tkinter.Label(self,text="Evaluation (Auto)")
 		self.translationLabelAuto.grid(column=0,row=y)
+
+		#Mass Translate Files
 
 		#row7
 		y += 1
@@ -372,16 +370,11 @@ class mainApp(Tkinter.Tk):
 		self.suggestionLabel.grid(column=2,row=y)
 
 
-
 		#Configure grid and display
 		self.grid_columnconfigure(0,weight=1)
 
 
-
-		#Options to resize window
-		#resizingallowed(x,y)
-		#self.resizable(True,False)
-
+	#Checking a word is in the dictionary and suggesting alternatives
 	def checkWord(self):
 
 		if(not len(self.word.get())):
@@ -393,9 +386,10 @@ class mainApp(Tkinter.Tk):
 			if(len(self.d.suggest(self.word.get()))>0):
 				self.suggestionLabel.config(text=self.d.suggest(self.word.get())[0])
 
-
+	#Run Normalization
 	def onButtonClick(self):
 		self.mainCode()
+
 
 	def uploadOriginalTweets(self):
 		self.filePath = askopenfilename()
@@ -405,6 +399,8 @@ class mainApp(Tkinter.Tk):
 		self.inputJSON = askopenfilename()
 		self.translatedFileLabel.config(text=str(self.inputJSON))
 
+
+	#Code for manually evaluating user inputted tweets
 	def evaluateMan(self):
 
 		original = self.translatedOrig.get()
@@ -437,6 +433,7 @@ class mainApp(Tkinter.Tk):
 		self.bleuLabelNormalised.config(text="BLEU: "+str(bleuNormalized))
 		#self.bleuLabelPerf.config(text="BLEU: "+str(bleuPerfect))
 
+	#Code for automatically evaluating a json file of input
 	def evaluateAuto(self):
 		jsonFile = open(self.inputJSON)
 		jsonStr = jsonFile.read()
@@ -495,12 +492,15 @@ class mainApp(Tkinter.Tk):
 
 		#print jsonData
 
+
+	#Avoid dividing by zero
 	def zeroMeanChecker(self,total,size):
 		if(total == 0):
 			return 0
 		else:
 			return total/size
 
+	#Normalize a single tweet
 	def normalize(self):
 		regexFinder = reg.RegexFinder()
 		tweet = self.origTweet.get()
@@ -510,6 +510,8 @@ class mainApp(Tkinter.Tk):
 			self.normTweetEntry.delete(0,len(self.normTweetEntry.get()))
 		self.normTweetEntry.insert(0,normTweet)
 
+
+	#Clear GUI boxes
 	def clear(self):
 		if(len(self.normTweetEntry.get()) > 0):
 			self.normTweetEntry.delete(0,len(self.normTweetEntry.get()))
@@ -524,6 +526,7 @@ class mainApp(Tkinter.Tk):
 		if(len(self.translatedNormalizedEntry.get()) > 0):
 			self.translatedNormalizedEntry.delete(0,len(self.translatedNormalizedEntry.get()))
 
+	#Load supplementary corpus
 	def loadCorpus(self,reg):
 		
 		infile = open(self.test_corpus,'r')
@@ -533,13 +536,12 @@ class mainApp(Tkinter.Tk):
 				reg.d.add_to_session(line)	
 		reg.corpus_loaded = 1
 
+	#extract tweets from file
 	def extractTweets(self):
 		min = self.minValue.get()
 		max = self.maxValue.get()
 		self.original_tweets_path = askopenfilename()
 		te.output(int(min),int(max),self.original_tweets_path)
-
-
 
 		def printOut(base,max):
 
@@ -559,6 +561,8 @@ class mainApp(Tkinter.Tk):
 		#filepath = printOut(min,max)
 		#print filepath
 
+
+	#Create dict of options to send to normalizer
 	def returnOptions(self):
 		options = {}
 		options['hasJW'] = self.jwtag.get()
@@ -579,18 +583,22 @@ class mainApp(Tkinter.Tk):
 		return options
 
 
+	#The main code for mass normalization of an input
 	def mainCode(self):
 
-
-
-		#infile = open(self.filePath,'r')
+		#Our normalizer object
 		regexFinder = reg.RegexFinder()
+		#logic to ensure corpus is loaded
 		if (not (regexFinder.corpus_loaded) and (self.load_corpus_flag.get())):
 			self.loadCorpus(regexFinder)
+		#the options we want to send to the normalizer
 		options = self.returnOptions()
+
+		#Normalize the inputted file and output a new file with normalizations contained.
 		print "Start Normalization"
 		regexFinder.outputLines(self.filePath,options)
 
+		#Update the GUI labels
 		self.num_htags.config(text="HTags: "+str(regexFinder.num_htags))
 		self.num_jwtags.config(text="JWTags: "+str(regexFinder.num_jwtags))
 		self.num_excesstags.config(text="ExcessTags: "+str(regexFinder.num_excesstags))
@@ -598,7 +606,7 @@ class mainApp(Tkinter.Tk):
 		self.numSubsLabel.config(text=str(regexFinder.total_subs))
 
 
-
+#Main method, initiate application
 if __name__ == "__main__":
 
 	app = mainApp(None)
