@@ -296,7 +296,7 @@ class RegexFinder:
 			w2 = m.group(3)
 
 			if(m.group(2) == "."):
-				sort out abbreviations
+				#sort out abbreviations
 				if(w1=="e" and w2=="g"):
 					return "0eg0"
 

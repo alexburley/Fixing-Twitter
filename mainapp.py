@@ -6,6 +6,7 @@ import RegexFinder as reg
 import unittest
 import TweetComparison as tc
 import TweetExtractor as te
+import TweetTranslator as tt
 import enchant
 import Tkinter
 import os
@@ -196,6 +197,20 @@ class mainApp(Tkinter.Tk):
 		self.excessTagN.set(1)
 		self.excessTagB = Tkinter.Checkbutton(self, text= "ExcessLetters",variable=self.excessTagN)
 		self.excessTagB.grid(column=6,row=y)
+
+		y += 1
+
+		self.translationLabel = Tkinter.Label(self,text="Translation")
+		self.translationLabel.grid(column=0,row=y)
+
+		y += 1
+
+		self.translateButton = Tkinter.Button(self,text="Translate",command=self.translate)
+		self.translateButton.grid(column=0,row=y)
+
+		self.lang = Tkinter.StringVar()
+		self.langEntry = Tkinter.Entry(self,textvariable=self.lang)
+		self.langEntry.grid(column=1,row=y)
 
 		#row6
 		y += 1
@@ -399,6 +414,10 @@ class mainApp(Tkinter.Tk):
 		self.inputJSON = askopenfilename()
 		self.translatedFileLabel.config(text=str(self.inputJSON))
 
+	def translate(self):
+		self.inputJSON = tt.translatorFunc(self.lang.get())
+		self.translatedFileLabel.config(text=str(self.inputJSON))
+
 
 	#Code for manually evaluating user inputted tweets
 	def evaluateMan(self):
@@ -437,6 +456,7 @@ class mainApp(Tkinter.Tk):
 	def evaluateAuto(self):
 		jsonFile = open(self.inputJSON)
 		jsonStr = jsonFile.read()
+		print jsonStr
 		jsonData = json.loads(jsonStr)['data']
 
 		size = len(jsonData)
@@ -597,6 +617,9 @@ class mainApp(Tkinter.Tk):
 		#Normalize the inputted file and output a new file with normalizations contained.
 		print "Start Normalization"
 		regexFinder.outputLines(self.filePath,options)
+
+		self.inputJSON = regexFinder.outfile
+		self.translatedFileLabel.config(text=str(self.inputJSON))
 
 		#Update the GUI labels
 		self.num_htags.config(text="HTags: "+str(regexFinder.num_htags))
