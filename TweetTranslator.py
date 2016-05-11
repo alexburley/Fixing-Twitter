@@ -55,4 +55,9 @@ def translatorFunc(language):
 	print "translation done"
 	return 'outputTrans1.txt'
 
+def translateLine(language,src):
+	print src, language
+	translator = Translator('fixingtwitter', 'QzR2/Cu4NoaPwnXNuQ5Eknk0uR58ZrWAtcDdjaM+dDM=')
+	return translator.translate(src,language)
+
 

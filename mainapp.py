@@ -267,14 +267,14 @@ class mainApp(Tkinter.Tk):
 		self.origTweetLabel.grid(column=0,row=y)
 
 		self.origTweet = Tkinter.StringVar()
-		self.origTweetEntry = Tkinter.Entry(self,textvariable=self.origTweet)
+		self.origTweetEntry = Tkinter.Entry(self,textvariable=self.origTweet,width=30)
 		self.origTweetEntry.grid(column=1, row=y)
 		
 		self.normTweetLabel = Tkinter.Label(self,text="Normalized")
 		self.normTweetLabel.grid(column=2,row=y)
 
 		self.normTweet = Tkinter.StringVar()
-		self.normTweetEntry = Tkinter.Entry(self,textvariable=self.normTweet)
+		self.normTweetEntry = Tkinter.Entry(self,textvariable=self.normTweet,width=30)
 		#self.normTweetEntry.insert(0,"Hello")
 		self.normTweetEntry.grid(column=3,row=y)
 
@@ -282,7 +282,7 @@ class mainApp(Tkinter.Tk):
 		self.perfTweetLabel.grid(column=4,row=y)
 
 		self.perfTweet = Tkinter.StringVar()
-		self.perfTweetEntry = Tkinter.Entry(self,textvariable=self.perfTweet)
+		self.perfTweetEntry = Tkinter.Entry(self,textvariable=self.perfTweet,width=30)
 		self.perfTweetEntry.grid(column=5,row=y)
 
 		self.numSubsLabelText = Tkinter.Label(self,text="#Substitutions: ")
@@ -298,7 +298,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedOrigLabel.grid(column=0,row=y)
 
 		self.translatedOrig = Tkinter.StringVar()
-		self.translatedOrigEntry = Tkinter.Entry(self,textvariable=self.translatedOrig)
+		self.translatedOrigEntry = Tkinter.Entry(self,textvariable=self.translatedOrig,width=30)
 		self.translatedOrigEntry.grid(column=1,row=y)
 		self.translatedOrigEntry.insert(0,"It is a guide to action which ensures that the military always obeys the commands of the party")
 
@@ -306,7 +306,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedNormalizedLabel.grid(column=2,row=y)
 
 		self.translatedNormalized = Tkinter.StringVar()
-		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized)
+		self.translatedNormalizedEntry = Tkinter.Entry(self,textvariable=self.translatedNormalized,width=30)
 		self.translatedNormalizedEntry.grid(column=3,row=y)
 		self.translatedNormalizedEntry.insert(0,"sommes-nous gagnants enfin bla bla don simon is my dad")
 
@@ -314,7 +314,7 @@ class mainApp(Tkinter.Tk):
 		self.translatedPerfLabel.grid(column=4,row=y)
 
 		self.translatedPerf = Tkinter.StringVar()
-		self.translatedPerfEntry = Tkinter.Entry(self,textvariable=self.translatedPerf)
+		self.translatedPerfEntry = Tkinter.Entry(self,textvariable=self.translatedPerf,width=30)
 		self.translatedPerfEntry.grid(column=5,row=y)
 		self.translatedPerfEntry.insert(0,"It is a guide to action that ensures the military will forever heed Party commands")
 
@@ -327,17 +327,34 @@ class mainApp(Tkinter.Tk):
 		#row 12
 		y += 1
 
-		self.normalizeButton = Tkinter.Button(self,text="Normalize",command=self.normalize)
-		self.normalizeButton.grid(column=2,row=y)
+		
 
+		self.normalizeButton = Tkinter.Button(self,text="Normalize",command=self.normalize)
+		self.normalizeButton.grid(column=0,row=y)
+
+		self.translaterButton = Tkinter.Button(self,text="Translate",command=self.translateMan)
+		self.translaterButton.grid(column=1,row=y)
+
+		self.translateLang = Tkinter.StringVar()
+		self.translateEntry = Tkinter.Entry(self,textvariable=self.translateLang)
+		self.translateEntry.grid(column=2,row=y)
+
+		self.translatePerfBool = Tkinter.IntVar()
+		self.translatePerfCheck = Tkinter.Checkbutton(self,text="Gen Reference",variable=self.translatePerfBool)
+		self.translatePerfCheck.grid(column=3,row=y)
+		
 		self.evaluateButton = Tkinter.Button(self,text="Evaluate",command=self.evaluateMan)
-		self.evaluateButton.grid(column=3,row=y)
+		self.evaluateButton.grid(column=4,row=y)
 
 		self.clearButton = Tkinter.Button(self,text="Clear",command=self.clear)
-		self.clearButton.grid(column=4,row=y)
+		self.clearButton.grid(column=5,row=y)
 
 
 		#row13
+		y += 1
+
+		self.languagelabel = Tkinter.Label(self,text="Language")
+		self.languagelabel.grid(column=2,row=y)
 
 		y += 1
 
@@ -417,6 +434,32 @@ class mainApp(Tkinter.Tk):
 	def translate(self):
 		self.inputJSON = tt.translatorFunc(self.lang.get())
 		self.translatedFileLabel.config(text=str(self.inputJSON))
+
+	def translateMan(self):
+
+		orig = self.origTweetEntry.get()
+		norm = self.normTweetEntry.get()
+		perf = self.perfTweetEntry.get()
+		language = str(self.translateLang.get())
+
+		translatedOrig = tt.translateLine(language,orig)
+		translatedNorm = tt.translateLine(language,norm)
+
+		if(self.translatePerfBool):
+			translatedPerf = tt.translateLine(language,perf)
+
+		if(len(self.translatedNormalizedEntry.get()) > 0):
+			self.translatedNormalizedEntry.delete(0,len(self.translatedNormalizedEntry.get()))
+		self.translatedNormalizedEntry.insert(0,translatedNorm)
+
+		if(len(self.translatedOrigEntry.get()) > 0):
+			self.translatedOrigEntry.delete(0,len(self.translatedOrigEntry.get()))
+		self.translatedOrigEntry.insert(0,translatedOrig)
+
+		if(self.translatePerfBool):
+			if(len(self.translatedPerfEntry.get()) > 0):
+				self.translatedPerfEntry.delete(0,len(self.translatedPerfEntry.get()))
+		self.translatedPerfEntry.insert(0,translatedPerf)
 
 
 	#Code for manually evaluating user inputted tweets
